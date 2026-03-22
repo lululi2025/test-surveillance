@@ -1,0 +1,1289 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI Cloud Surveillance — EnGenius</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+/* ===================== RESET & BASE ===================== */
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body {
+  font-family: 'Manrope', sans-serif;
+  color: #1a1a2e;
+  background: #fff;
+  line-height: 1.6;
+  letter-spacing: .01em;
+  -webkit-font-smoothing: antialiased;
+}
+img { max-width: 100%; display: block; }
+a { text-decoration: none; color: inherit; }
+
+/* ===================== UTILITIES ===================== */
+.container { max-width: 1100px; margin: 0 auto; padding: 0 24px; }
+.section-pad { padding: 100px 0; }
+.text-center { text-align: center; }
+
+/* ===================== TYPOGRAPHY ===================== */
+h1 { font-size: clamp(2rem, 5vw, 3.2rem); font-weight: 800; line-height: 1.15; letter-spacing: -.02em; }
+h2 { font-size: clamp(1.6rem, 3.5vw, 2.4rem); font-weight: 700; line-height: 1.2; letter-spacing: -.015em; }
+h3 { font-size: clamp(1.1rem, 2vw, 1.4rem); font-weight: 700; line-height: 1.3; }
+p { font-size: 1rem; color: #444; }
+
+/* ===================== BUTTONS ===================== */
+.btn {
+  display: inline-block; padding: 14px 32px; border-radius: 8px;
+  font-weight: 700; font-size: .95rem; letter-spacing: .02em;
+  transition: transform .2s, box-shadow .2s, filter .2s; cursor: pointer; border: none;
+}
+.btn:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(0,0,0,.15); }
+.btn-primary { background: #FFA200; color: #fff; }
+.btn-primary:hover { filter: brightness(1.08); }
+.btn-secondary { background: transparent; color: #fff; border: 2px solid rgba(255,255,255,.5); }
+.btn-secondary:hover { border-color: #fff; background: rgba(255,255,255,.1); }
+.btn-outline { background: transparent; color: #03A9F4; border: 2px solid #03A9F4; }
+.btn-outline:hover { background: #03A9F4; color: #fff; }
+
+/* ===================== HEADER / NAV ===================== */
+.site-header {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+  background: rgba(26, 15, 34, .92); backdrop-filter: blur(12px);
+  padding: 16px 0; transition: background .3s;
+}
+.nav-inner { display: flex; align-items: center; justify-content: space-between; }
+.nav-logo img { height: 28px; }
+.nav-links { display: flex; gap: 28px; align-items: center; }
+.nav-links a { color: rgba(255,255,255,.75); font-size: .85rem; font-weight: 500; transition: color .2s; }
+.nav-links a:hover { color: #fff; }
+.nav-cta { margin-left: 8px; }
+.mobile-toggle { display: none; background: none; border: none; cursor: pointer; }
+.mobile-toggle span { display: block; width: 22px; height: 2px; background: #fff; margin: 5px 0; transition: .3s; }
+
+/* ===================== HERO ===================== */
+.hero {
+  position: relative; min-height: 100vh; display: flex; align-items: center;
+  background: linear-gradient(135deg, #291734 0%, #1a0f22 50%, #0d1b2a 100%);
+  overflow: hidden; padding-top: 80px;
+}
+.hero-bg-grid {
+  position: absolute; inset: 0; opacity: .08;
+  background-image:
+    linear-gradient(rgba(3,169,244,.3) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(3,169,244,.3) 1px, transparent 1px);
+  background-size: 60px 60px;
+}
+.hero-glow {
+  position: absolute; width: 600px; height: 600px; border-radius: 50%;
+  background: radial-gradient(circle, rgba(3,169,244,.15) 0%, transparent 70%);
+  top: 20%; right: -10%; animation: pulse-glow 6s ease-in-out infinite;
+}
+@keyframes pulse-glow { 0%, 100% { opacity: .6; transform: scale(1); } 50% { opacity: 1; transform: scale(1.1); } }
+.hero-content { position: relative; z-index: 2; display: grid; grid-template-columns: 1fr 1fr; gap: 60px; align-items: center; }
+.hero-text { color: #fff; }
+.hero-text .badge {
+  display: inline-block; padding: 6px 16px; border-radius: 20px; font-size: .75rem;
+  font-weight: 600; letter-spacing: .05em; text-transform: uppercase;
+  background: rgba(3,169,244,.15); color: #03A9F4; border: 1px solid rgba(3,169,244,.3);
+  margin-bottom: 24px;
+}
+.hero-text h1 { margin-bottom: 20px; }
+.hero-text h1 span { color: #03A9F4; }
+.hero-text p { font-size: 1.15rem; color: rgba(255,255,255,.7); margin-bottom: 32px; line-height: 1.7; }
+.hero-buttons { display: flex; gap: 16px; flex-wrap: wrap; }
+.hero-products { position: relative; display: flex; justify-content: center; align-items: center; }
+.hero-product-img { max-height: 400px; filter: drop-shadow(0 20px 60px rgba(3,169,244,.2)); animation: float 6s ease-in-out infinite; }
+@keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-15px); } }
+
+/* ===================== PAIN POINTS ===================== */
+.pain-section { background: #f8f9fb; }
+.pain-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 32px; margin-top: 48px; }
+.pain-card {
+  background: #fff; border-radius: 16px; padding: 40px 32px;
+  border: 1px solid #eee; transition: transform .3s, box-shadow .3s;
+}
+.pain-card:hover { transform: translateY(-4px); box-shadow: 0 12px 40px rgba(0,0,0,.06); }
+.pain-icon {
+  width: 56px; height: 56px; border-radius: 12px; display: flex; align-items: center; justify-content: center;
+  background: rgba(234,61,86,.08); margin-bottom: 20px;
+}
+.pain-icon svg { width: 28px; height: 28px; stroke: #EA3D56; fill: none; stroke-width: 1.5; }
+.pain-card h3 { margin-bottom: 12px; color: #1a1a2e; }
+.pain-card p { font-size: .92rem; color: #666; line-height: 1.65; }
+
+/* ===================== SOLUTION OVERVIEW ===================== */
+.solution-section { background: #fff; }
+.solution-content { display: grid; grid-template-columns: 1fr 1fr; gap: 60px; align-items: center; margin-top: 48px; }
+.solution-text p { margin-bottom: 16px; color: #555; }
+.solution-text p:last-child { margin-bottom: 0; }
+.solution-highlight { color: #03A9F4; font-weight: 600; }
+/* Architecture Animation */
+.arch-anim {
+  background: linear-gradient(135deg, #f0f4f8 0%, #e8eef5 100%);
+  border-radius: 20px; padding: 48px; position: relative; min-height: 340px;
+  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 40px;
+}
+.arch-row { display: flex; align-items: center; gap: 24px; }
+.arch-node {
+  background: #fff; border-radius: 14px; padding: 16px 24px; box-shadow: 0 4px 16px rgba(0,0,0,.06);
+  display: flex; align-items: center; gap: 12px; font-weight: 600; font-size: .85rem; color: #1a1a2e;
+  position: relative;
+}
+.arch-node-icon {
+  width: 36px; height: 36px; border-radius: 8px; display: flex; align-items: center; justify-content: center;
+}
+.arch-node-icon svg { width: 20px; height: 20px; }
+.arch-node-icon.cam { background: rgba(3,169,244,.1); }
+.arch-node-icon.cam svg { stroke: #03A9F4; fill: none; }
+.arch-node-icon.cloud { background: rgba(255,162,0,.1); }
+.arch-node-icon.cloud svg { stroke: #FFA200; fill: none; }
+.arch-node-icon.dash { background: rgba(76,175,80,.1); }
+.arch-node-icon.dash svg { stroke: #4CAF50; fill: none; }
+.arch-arrow {
+  display: flex; flex-direction: column; align-items: center; gap: 4px;
+}
+.arch-arrow-line { width: 60px; height: 2px; background: #03A9F4; position: relative; overflow: hidden; }
+.arch-arrow-line::after {
+  content: ''; position: absolute; width: 20px; height: 100%; background: rgba(255,255,255,.8);
+  animation: arrow-flow 2s linear infinite; left: -20px;
+}
+@keyframes arrow-flow { 0% { left: -20px; } 100% { left: 60px; } }
+.arch-arrow-label { font-size: .65rem; color: #888; font-weight: 500; white-space: nowrap; }
+.arch-status {
+  position: absolute; bottom: 16px; right: 20px; display: flex; align-items: center; gap: 6px;
+  font-size: .7rem; color: #4CAF50; font-weight: 600;
+}
+.arch-status-dot { width: 6px; height: 6px; border-radius: 50%; background: #4CAF50; animation: blink 2s infinite; }
+@keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: .3; } }
+
+/* ===================== FEATURES ===================== */
+.features-section { background: #f8f9fb; }
+.features-header { margin-bottom: 64px; }
+.feature-block {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 60px; align-items: center;
+  margin-bottom: 80px;
+}
+.feature-block:last-child { margin-bottom: 0; }
+.feature-block.reverse { direction: rtl; }
+.feature-block.reverse > * { direction: ltr; }
+.feature-text .feature-label {
+  display: inline-block; font-size: .7rem; font-weight: 700; text-transform: uppercase;
+  letter-spacing: .08em; color: #03A9F4; margin-bottom: 12px;
+  padding: 4px 12px; background: rgba(3,169,244,.08); border-radius: 4px;
+}
+.feature-text h3 { font-size: clamp(1.3rem, 2.5vw, 1.8rem); margin-bottom: 16px; color: #1a1a2e; }
+.feature-text p { color: #555; margin-bottom: 12px; line-height: 1.7; font-size: .95rem; }
+
+/* Feature Animation Containers */
+.feature-visual {
+  background: linear-gradient(135deg, #1a1a2e 0%, #0d1b2a 100%);
+  border-radius: 20px; overflow: hidden; position: relative;
+  aspect-ratio: 3/2; display: flex; align-items: center; justify-content: center;
+}
+
+/* --- 4a: AI Detection Animation --- */
+.detect-anim { padding: 32px; width: 100%; height: 100%; position: relative; }
+.detect-scene {
+  width: 100%; height: 100%; border: 1px solid rgba(255,255,255,.1); border-radius: 8px;
+  position: relative; overflow: hidden; background: rgba(255,255,255,.03);
+}
+.detect-person {
+  position: absolute; bottom: 20%; width: 30px; height: 60px;
+  border: 2px solid #4CAF50; border-radius: 4px;
+  animation: walk-across 8s linear infinite;
+}
+.detect-person::after {
+  content: 'Person'; position: absolute; top: -20px; left: 0; font-size: .6rem;
+  color: #4CAF50; font-weight: 600; background: rgba(76,175,80,.2); padding: 2px 6px; border-radius: 3px;
+}
+@keyframes walk-across { 0% { left: -40px; } 100% { left: calc(100% + 40px); } }
+.detect-vehicle {
+  position: absolute; bottom: 15%; width: 60px; height: 35px;
+  border: 2px solid #03A9F4; border-radius: 4px;
+  animation: drive-across 10s linear infinite 3s;
+}
+.detect-vehicle::after {
+  content: 'Vehicle'; position: absolute; top: -20px; left: 0; font-size: .6rem;
+  color: #03A9F4; font-weight: 600; background: rgba(3,169,244,.2); padding: 2px 6px; border-radius: 3px;
+}
+@keyframes drive-across { 0% { right: -70px; left: auto; } 100% { right: calc(100% + 70px); left: auto; } }
+.detect-tripwire {
+  position: absolute; top: 0; bottom: 0; left: 55%;
+  border-left: 2px dashed rgba(234,61,86,.5);
+}
+.detect-tripwire-label {
+  position: absolute; top: 8px; left: 57%; font-size: .6rem; color: #EA3D56;
+  font-weight: 600; letter-spacing: .03em;
+}
+.detect-counter {
+  position: absolute; top: 12px; right: 12px; background: rgba(3,169,244,.15);
+  color: #03A9F4; padding: 6px 12px; border-radius: 6px; font-size: .7rem; font-weight: 700;
+}
+.detect-hud {
+  position: absolute; bottom: 8px; left: 12px; font-size: .6rem; color: rgba(255,255,255,.3);
+  font-family: monospace;
+}
+
+/* --- 4b: Face & LPR Animation --- */
+.facerec-anim { padding: 24px; width: 100%; display: grid; grid-template-columns: 1fr 1fr; gap: 16px; height: 100%; }
+.facerec-panel {
+  background: rgba(255,255,255,.04); border-radius: 12px; border: 1px solid rgba(255,255,255,.08);
+  padding: 20px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 12px;
+}
+.facerec-panel-title { font-size: .65rem; color: rgba(255,255,255,.5); font-weight: 600; text-transform: uppercase; letter-spacing: .08em; }
+.face-circle {
+  width: 64px; height: 64px; border-radius: 50%; border: 2px solid #4CAF50;
+  background: rgba(76,175,80,.1); display: flex; align-items: center; justify-content: center;
+  animation: face-scan 4s ease-in-out infinite;
+}
+@keyframes face-scan {
+  0%, 100% { border-color: rgba(76,175,80,.3); box-shadow: none; }
+  50% { border-color: #4CAF50; box-shadow: 0 0 20px rgba(76,175,80,.3); }
+}
+.face-circle svg { width: 28px; height: 28px; stroke: #4CAF50; fill: none; }
+.face-tag {
+  background: rgba(76,175,80,.15); color: #4CAF50; padding: 4px 12px; border-radius: 4px;
+  font-size: .7rem; font-weight: 700; animation: fade-tag 4s ease-in-out infinite;
+}
+@keyframes fade-tag { 0%, 30% { opacity: 0; } 50%, 100% { opacity: 1; } }
+.lpr-plate {
+  background: #fff; color: #1a1a2e; padding: 8px 20px; border-radius: 6px;
+  font-size: 1.1rem; font-weight: 800; letter-spacing: .15em; font-family: monospace;
+  border: 2px solid #ddd; animation: plate-scan 5s ease-in-out infinite;
+}
+@keyframes plate-scan {
+  0%, 100% { box-shadow: none; border-color: #ddd; }
+  50% { box-shadow: 0 0 20px rgba(3,169,244,.3); border-color: #03A9F4; }
+}
+.lpr-result {
+  color: #03A9F4; font-size: .7rem; font-weight: 700; animation: fade-tag 5s ease-in-out infinite;
+}
+
+/* --- 4c: Custom Alerts Animation --- */
+.alerts-anim { padding: 24px; width: 100%; height: 100%; position: relative; }
+.alerts-scene {
+  width: 100%; height: 100%; position: relative; border-radius: 8px;
+  background: rgba(255,255,255,.03); border: 1px solid rgba(255,255,255,.1); overflow: hidden;
+}
+.alerts-zone {
+  position: absolute; top: 20%; left: 15%; width: 45%; height: 55%;
+  border: 2px dashed rgba(234,61,86,.4); border-radius: 8px;
+  animation: zone-pulse 3s ease-in-out infinite;
+}
+@keyframes zone-pulse {
+  0%, 100% { border-color: rgba(234,61,86,.3); background: transparent; }
+  50% { border-color: rgba(234,61,86,.6); background: rgba(234,61,86,.05); }
+}
+.alerts-zone-label {
+  position: absolute; top: 22%; left: 17%; font-size: .6rem; color: #EA3D56;
+  font-weight: 600; letter-spacing: .03em;
+}
+.alerts-time {
+  position: absolute; top: 12px; left: 12px; font-size: .6rem; color: rgba(255,255,255,.4);
+  font-family: monospace;
+}
+.alerts-intruder {
+  position: absolute; bottom: 35%; width: 24px; height: 48px;
+  border: 2px solid #EA3D56; border-radius: 4px;
+  animation: intrude 6s ease-in-out infinite;
+}
+@keyframes intrude {
+  0%, 20% { left: 5%; opacity: 0; }
+  30% { left: 5%; opacity: 1; }
+  60% { left: 30%; opacity: 1; }
+  70%, 100% { left: 30%; opacity: 0; }
+}
+.alerts-notif {
+  position: absolute; top: 16px; right: 16px; background: rgba(234,61,86,.9);
+  color: #fff; padding: 10px 16px; border-radius: 10px; font-size: .7rem; font-weight: 600;
+  display: flex; align-items: center; gap: 8px; opacity: 0;
+  animation: notif-pop 6s ease-in-out infinite;
+  box-shadow: 0 4px 20px rgba(234,61,86,.3);
+}
+@keyframes notif-pop {
+  0%, 50% { opacity: 0; transform: translateY(-10px); }
+  60%, 85% { opacity: 1; transform: translateY(0); }
+  95%, 100% { opacity: 0; }
+}
+.alerts-notif svg { width: 14px; height: 14px; stroke: #fff; fill: none; }
+
+/* --- 4d: Edge Storage Animation --- */
+.storage-anim { padding: 32px; width: 100%; }
+.storage-flow { display: flex; align-items: center; justify-content: center; gap: 20px; flex-wrap: wrap; }
+.storage-node {
+  background: rgba(255,255,255,.06); border: 1px solid rgba(255,255,255,.12);
+  border-radius: 14px; padding: 20px; text-align: center; min-width: 100px;
+}
+.storage-node-icon { margin: 0 auto 8px; }
+.storage-node-icon svg { width: 32px; height: 32px; margin: 0 auto; }
+.storage-node-label { font-size: .7rem; color: rgba(255,255,255,.6); font-weight: 600; }
+.storage-conn {
+  width: 50px; height: 2px; position: relative; overflow: hidden;
+  transition: background .5s;
+}
+.storage-conn.active { background: #4CAF50; }
+.storage-conn.active::after {
+  content: ''; position: absolute; width: 15px; height: 100%; background: rgba(255,255,255,.6);
+  animation: arrow-flow 1.5s linear infinite; left: -15px;
+}
+.storage-conn.broken { background: #EA3D56; }
+.storage-conn.broken::after { display: none; }
+.storage-status {
+  text-align: center; margin-top: 20px; font-size: .75rem; font-weight: 600; min-height: 20px;
+}
+/* Storage animation states via CSS */
+.storage-anim { animation: storage-cycle 8s ease-in-out infinite; }
+.storage-conn-line { animation: conn-cycle 8s ease-in-out infinite; }
+@keyframes conn-cycle {
+  0%, 30% { background: #4CAF50; }
+  35%, 65% { background: #EA3D56; }
+  70%, 100% { background: #03A9F4; }
+}
+.storage-status-text { animation: status-cycle 8s ease-in-out infinite; }
+@keyframes status-cycle {
+  0%, 30% { color: #4CAF50; }
+  35%, 65% { color: #FFA200; }
+  70%, 100% { color: #03A9F4; }
+}
+.storage-rec-dot {
+  display: inline-block; width: 6px; height: 6px; border-radius: 50%;
+  background: #EA3D56; margin-right: 4px; animation: blink 1s infinite;
+}
+
+/* --- 4e: NL Search Animation --- */
+.search-anim { padding: 32px; width: 100%; }
+.search-ui { max-width: 380px; margin: 0 auto; }
+.search-bar {
+  background: rgba(255,255,255,.08); border: 1px solid rgba(255,255,255,.15);
+  border-radius: 10px; padding: 14px 18px; display: flex; align-items: center; gap: 10px;
+  margin-bottom: 20px;
+}
+.search-bar svg { width: 18px; height: 18px; stroke: rgba(255,255,255,.4); fill: none; flex-shrink: 0; }
+.search-bar-text {
+  color: #fff; font-size: .85rem; font-weight: 500; position: relative;
+  overflow: hidden; white-space: nowrap; min-height: 1.2em;
+}
+.typing-text {
+  display: inline-block; animation: typing 6s steps(36) infinite;
+  overflow: hidden; white-space: nowrap; max-width: 0;
+}
+@keyframes typing {
+  0%, 10% { max-width: 0; }
+  40%, 70% { max-width: 300px; }
+  85%, 100% { max-width: 300px; }
+}
+.typing-cursor {
+  display: inline-block; width: 2px; height: 1em; background: #03A9F4;
+  margin-left: 2px; vertical-align: text-bottom; animation: cursor-blink .8s infinite;
+}
+@keyframes cursor-blink { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
+.search-results { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.search-result-card {
+  background: rgba(255,255,255,.05); border-radius: 8px; padding: 12px;
+  border: 1px solid rgba(255,255,255,.08); opacity: 0;
+  animation: result-appear 6s ease-in-out infinite;
+}
+.search-result-card:nth-child(1) { animation-delay: 0s; }
+.search-result-card:nth-child(2) { animation-delay: .15s; }
+.search-result-card:nth-child(3) { animation-delay: .3s; }
+.search-result-card:nth-child(4) { animation-delay: .45s; }
+@keyframes result-appear {
+  0%, 40% { opacity: 0; transform: translateY(10px); }
+  50%, 75% { opacity: 1; transform: translateY(0); }
+  85%, 100% { opacity: 0; }
+}
+.result-thumb {
+  width: 100%; aspect-ratio: 16/9; background: rgba(3,169,244,.1); border-radius: 4px;
+  margin-bottom: 8px; display: flex; align-items: center; justify-content: center;
+}
+.result-thumb svg { width: 20px; height: 20px; stroke: rgba(3,169,244,.4); fill: none; }
+.result-meta { font-size: .6rem; color: rgba(255,255,255,.4); }
+.result-meta span { color: rgba(255,255,255,.6); font-weight: 600; }
+
+/* --- 4f: Dashboard Animation --- */
+.dashboard-anim { padding: 24px; width: 100%; height: 100%; }
+.dash-container { width: 100%; height: 100%; position: relative; border-radius: 12px; overflow: hidden; }
+.dash-panel {
+  position: absolute; inset: 0; opacity: 0; transition: opacity 1s;
+  display: flex; flex-direction: column; padding: 16px;
+  background: rgba(255,255,255,.03); border: 1px solid rgba(255,255,255,.08); border-radius: 12px;
+}
+.dash-panel.active { opacity: 1; }
+.dash-panel-title {
+  font-size: .65rem; color: rgba(255,255,255,.4); font-weight: 600; text-transform: uppercase;
+  letter-spacing: .08em; margin-bottom: 12px; display: flex; align-items: center; gap: 6px;
+}
+.dash-panel-title .dot { width: 6px; height: 6px; border-radius: 50%; }
+.dash-cam-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; flex: 1; }
+.dash-cam-cell {
+  background: rgba(255,255,255,.04); border-radius: 6px; display: flex;
+  align-items: center; justify-content: center; position: relative;
+  border: 1px solid rgba(255,255,255,.06);
+}
+.dash-cam-cell .cam-label {
+  position: absolute; bottom: 6px; left: 8px; font-size: .55rem;
+  color: rgba(255,255,255,.4); font-weight: 500;
+}
+.dash-cam-cell .cam-live {
+  position: absolute; top: 6px; right: 8px; font-size: .5rem;
+  color: #EA3D56; font-weight: 700; display: flex; align-items: center; gap: 3px;
+}
+.dash-cam-cell .cam-live::before {
+  content: ''; width: 4px; height: 4px; border-radius: 50%; background: #EA3D56;
+  animation: blink 1.5s infinite;
+}
+.dash-cam-cell svg { width: 24px; height: 24px; stroke: rgba(255,255,255,.15); fill: none; }
+/* Topology panel */
+.dash-topo { flex: 1; display: flex; align-items: center; justify-content: center; position: relative; }
+.topo-node {
+  position: absolute; width: 40px; height: 40px; border-radius: 10px;
+  display: flex; align-items: center; justify-content: center;
+  border: 1px solid rgba(255,255,255,.12);
+}
+.topo-node svg { width: 18px; height: 18px; fill: none; }
+.topo-node.router { background: rgba(255,162,0,.1); top: 10%; left: 50%; transform: translateX(-50%); }
+.topo-node.router svg { stroke: #FFA200; }
+.topo-node.switch1 { background: rgba(3,169,244,.1); top: 45%; left: 25%; }
+.topo-node.switch1 svg { stroke: #03A9F4; }
+.topo-node.switch2 { background: rgba(3,169,244,.1); top: 45%; right: 25%; }
+.topo-node.switch2 svg { stroke: #03A9F4; }
+.topo-node.cam1 { background: rgba(76,175,80,.1); bottom: 10%; left: 10%; }
+.topo-node.cam1 svg { stroke: #4CAF50; }
+.topo-node.cam2 { background: rgba(76,175,80,.1); bottom: 10%; left: 38%; }
+.topo-node.cam2 svg { stroke: #4CAF50; }
+.topo-node.cam3 { background: rgba(76,175,80,.1); bottom: 10%; right: 10%; }
+.topo-node.cam3 svg { stroke: #4CAF50; }
+/* PDU panel */
+.dash-pdu-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; flex: 1; }
+.pdu-outlet {
+  background: rgba(255,255,255,.04); border-radius: 8px; padding: 12px;
+  border: 1px solid rgba(255,255,255,.06); text-align: center;
+  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px;
+}
+.pdu-outlet .pdu-status {
+  width: 10px; height: 10px; border-radius: 50%;
+}
+.pdu-outlet .pdu-status.on { background: #4CAF50; box-shadow: 0 0 8px rgba(76,175,80,.4); }
+.pdu-outlet .pdu-status.off { background: #555; }
+.pdu-outlet .pdu-label { font-size: .55rem; color: rgba(255,255,255,.4); font-weight: 500; }
+.pdu-outlet .pdu-watts { font-size: .7rem; color: rgba(255,255,255,.7); font-weight: 700; }
+/* Dashboard alert notification */
+.dash-alert-toast {
+  position: absolute; top: 12px; right: 12px; background: rgba(76,175,80,.9);
+  color: #fff; padding: 8px 14px; border-radius: 8px; font-size: .65rem; font-weight: 600;
+  display: flex; align-items: center; gap: 6px; opacity: 0; z-index: 5;
+  box-shadow: 0 4px 16px rgba(76,175,80,.3);
+}
+.dash-alert-toast svg { width: 12px; height: 12px; stroke: #fff; fill: none; }
+/* Dashboard tab indicators */
+.dash-tabs {
+  display: flex; gap: 8px; margin-bottom: 12px; justify-content: center;
+}
+.dash-tab {
+  width: 8px; height: 8px; border-radius: 50%; background: rgba(255,255,255,.15);
+  transition: background .3s;
+}
+.dash-tab.active { background: #03A9F4; }
+
+/* ===================== PRODUCTS ===================== */
+.products-section { background: #fff; }
+.products-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; margin-top: 48px; }
+.product-card {
+  background: #f8f9fb; border-radius: 16px; padding: 32px 24px;
+  border: 1px solid #eee; transition: transform .3s, box-shadow .3s; text-align: center;
+}
+.product-card:hover { transform: translateY(-6px); box-shadow: 0 16px 48px rgba(0,0,0,.08); }
+.product-img { height: 160px; display: flex; align-items: center; justify-content: center; margin-bottom: 20px; }
+.product-img img { max-height: 140px; object-fit: contain; }
+.product-model { font-size: .7rem; color: #03A9F4; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; margin-bottom: 4px; }
+.product-name { font-size: 1.05rem; font-weight: 700; margin-bottom: 12px; color: #1a1a2e; }
+.product-specs { list-style: none; margin-bottom: 20px; }
+.product-specs li {
+  font-size: .8rem; color: #666; padding: 4px 0; border-bottom: 1px solid #eee;
+  display: flex; align-items: center; gap: 6px;
+}
+.product-specs li:last-child { border-bottom: none; }
+.product-specs li::before { content: ''; width: 4px; height: 4px; border-radius: 50%; background: #03A9F4; flex-shrink: 0; }
+.products-nvs-row { display: grid; grid-template-columns: repeat(2, 1fr); gap: 24px; margin-top: 24px; }
+.product-card .nvs-badge {
+  display: inline-block; padding: 3px 10px; border-radius: 4px; font-size: .65rem;
+  font-weight: 700; background: rgba(255,162,0,.1); color: #FFA200; margin-bottom: 8px;
+}
+
+/* ===================== TCO ===================== */
+.tco-section {
+  background: linear-gradient(135deg, #291734 0%, #1a0f22 100%); color: #fff;
+}
+.tco-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 32px; margin: 48px 0; }
+.tco-card {
+  background: rgba(255,255,255,.05); border: 1px solid rgba(255,255,255,.1);
+  border-radius: 16px; padding: 32px;
+}
+.tco-card-icon {
+  width: 48px; height: 48px; border-radius: 12px; display: flex;
+  align-items: center; justify-content: center; margin-bottom: 16px;
+  background: rgba(3,169,244,.1);
+}
+.tco-card-icon svg { width: 24px; height: 24px; stroke: #03A9F4; fill: none; }
+.tco-card h3 { color: #fff; margin-bottom: 12px; font-size: 1.1rem; }
+.tco-card p { color: rgba(255,255,255,.6); font-size: .9rem; line-height: 1.65; }
+.tco-quote {
+  text-align: center; margin-top: 16px; padding-top: 40px;
+  border-top: 1px solid rgba(255,255,255,.08);
+}
+.tco-quote p {
+  font-size: clamp(1.2rem, 2.5vw, 1.6rem); font-weight: 700; color: #fff;
+  line-height: 1.4;
+}
+.tco-quote p span { color: #FFA200; }
+.tco-disclaimer {
+  text-align: center; margin-top: 20px; font-size: .75rem;
+  color: rgba(255,255,255,.35);
+}
+
+/* ===================== USE CASES ===================== */
+.usecases-section { background: #fff; }
+.usecases-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; margin-top: 48px; }
+.usecase-card {
+  border-radius: 16px; overflow: hidden; border: 1px solid #eee;
+  transition: transform .3s, box-shadow .3s;
+}
+.usecase-card:hover { transform: translateY(-4px); box-shadow: 0 12px 40px rgba(0,0,0,.08); }
+.usecase-img {
+  height: 160px; background: linear-gradient(135deg, #e8eef5 0%, #dde4ed 100%);
+  display: flex; align-items: center; justify-content: center;
+}
+.usecase-img svg { width: 48px; height: 48px; stroke: #03A9F4; fill: none; opacity: .4; }
+.usecase-content { padding: 24px; }
+.usecase-content h3 { font-size: 1rem; margin-bottom: 8px; }
+.usecase-content p { font-size: .85rem; color: #666; line-height: 1.6; }
+
+/* ===================== CTA ===================== */
+.cta-section {
+  background: linear-gradient(135deg, #291734 0%, #0d1b2a 100%);
+  color: #fff; position: relative; overflow: hidden;
+}
+.cta-section .hero-bg-grid { opacity: .05; }
+.cta-content { text-align: center; position: relative; z-index: 2; }
+.cta-content h2 { color: #fff; margin-bottom: 16px; }
+.cta-content > p { color: rgba(255,255,255,.65); font-size: 1.1rem; margin-bottom: 40px; }
+.cta-buttons { display: flex; gap: 16px; justify-content: center; margin-bottom: 48px; flex-wrap: wrap; }
+/* Form */
+.cta-form {
+  max-width: 600px; margin: 0 auto; background: rgba(255,255,255,.06);
+  border: 1px solid rgba(255,255,255,.1); border-radius: 20px; padding: 40px;
+  display: none;
+}
+.cta-form.visible { display: block; animation: fadeUp .5s ease-out; }
+@keyframes fadeUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+.form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+.form-group { display: flex; flex-direction: column; gap: 6px; }
+.form-group.full { grid-column: 1 / -1; }
+.form-group label { font-size: .75rem; font-weight: 600; color: rgba(255,255,255,.6); }
+.form-group input, .form-group select {
+  background: rgba(255,255,255,.08); border: 1px solid rgba(255,255,255,.15);
+  border-radius: 8px; padding: 12px 16px; color: #fff; font-size: .9rem;
+  font-family: 'Manrope', sans-serif; outline: none; transition: border-color .2s;
+}
+.form-group input::placeholder { color: rgba(255,255,255,.3); }
+.form-group input:focus, .form-group select:focus { border-color: #03A9F4; }
+.form-group select option { background: #1a1a2e; color: #fff; }
+.form-submit { margin-top: 24px; text-align: center; }
+.form-submit .btn { width: 100%; padding: 16px; font-size: 1rem; }
+.form-note { font-size: .75rem; color: rgba(255,255,255,.4); margin-top: 16px; text-align: center; }
+
+/* ===================== FOOTER ===================== */
+.site-footer {
+  background: #0d0a12; padding: 40px 0; text-align: center;
+}
+.footer-logo img { height: 24px; margin: 0 auto 16px; }
+.footer-links { display: flex; gap: 24px; justify-content: center; margin-bottom: 16px; flex-wrap: wrap; }
+.footer-links a { font-size: .8rem; color: rgba(255,255,255,.4); transition: color .2s; }
+.footer-links a:hover { color: #fff; }
+.footer-copy { font-size: .75rem; color: rgba(255,255,255,.25); }
+
+/* ===================== SCROLL ANIMATIONS ===================== */
+.reveal {
+  opacity: 0; transform: translateY(30px);
+  transition: opacity .7s ease-out, transform .7s ease-out;
+}
+.reveal.visible { opacity: 1; transform: translateY(0); }
+
+/* ===================== RESPONSIVE ===================== */
+@media (max-width: 996px) {
+  .hero-content { grid-template-columns: 1fr; text-align: center; }
+  .hero-buttons { justify-content: center; }
+  .hero-products { margin-top: 40px; }
+  .hero-product-img { max-height: 280px; }
+  .feature-block, .feature-block.reverse { grid-template-columns: 1fr; direction: ltr; }
+  .solution-content { grid-template-columns: 1fr; }
+  .products-grid { grid-template-columns: repeat(2, 1fr); }
+  .tco-grid { grid-template-columns: 1fr; }
+  .usecases-grid { grid-template-columns: repeat(2, 1fr); }
+}
+@media (max-width: 768px) {
+  .section-pad { padding: 64px 0; }
+  .nav-links { display: none; }
+  .mobile-toggle { display: block; }
+  .pain-grid { grid-template-columns: 1fr; }
+  .products-grid { grid-template-columns: 1fr; }
+  .products-nvs-row { grid-template-columns: 1fr; }
+  .usecases-grid { grid-template-columns: 1fr; }
+  .form-grid { grid-template-columns: 1fr; }
+  .facerec-anim { grid-template-columns: 1fr; }
+  .arch-row { flex-direction: column; }
+  .arch-arrow-line { width: 2px; height: 40px; }
+  .arch-arrow { flex-direction: row; }
+}
+</style>
+</head>
+<body>
+
+<!-- ==================== HEADER ==================== -->
+<header class="site-header">
+  <div class="container nav-inner">
+    <a href="#" class="nav-logo">
+      <img src="assets/logos/EnGenius%20Cloud_White_Horizontal.png" alt="EnGenius Cloud">
+    </a>
+    <nav class="nav-links">
+      <a href="#features">Features</a>
+      <a href="#products">Products</a>
+      <a href="#savings">Savings</a>
+      <a href="#industries">Industries</a>
+      <a href="#trial" class="btn btn-primary btn-sm nav-cta" style="padding:10px 24px;font-size:.8rem;">Free Trial</a>
+    </nav>
+    <button class="mobile-toggle" aria-label="Menu" onclick="document.querySelector('.nav-links').classList.toggle('show')">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+</header>
+
+<!-- ==================== HERO ==================== -->
+<section class="hero" id="hero">
+  <div class="hero-bg-grid"></div>
+  <div class="hero-glow"></div>
+  <div class="container hero-content">
+    <div class="hero-text">
+      <div class="badge">AI Cloud Surveillance</div>
+      <h1>Surveillance that Thinks at the Edge, <span>Manages from the Cloud</span></h1>
+      <p>AI-powered cameras with built-in edge storage and zero mandatory licensing fees. Enterprise-grade security — without the enterprise price tag.</p>
+      <div class="hero-buttons">
+        <a href="#products" class="btn btn-primary">Explore the Lineup</a>
+        <a href="#trial" class="btn btn-secondary">Start Free Trial</a>
+      </div>
+    </div>
+    <div class="hero-products">
+      <img src="assets/images/ECC500_ALL_20241210.png" alt="EnGenius AI Camera ECC500" class="hero-product-img">
+    </div>
+  </div>
+</section>
+
+<!-- ==================== PAIN POINTS ==================== -->
+<section class="pain-section section-pad" id="pain">
+  <div class="container">
+    <div class="text-center reveal">
+      <h2>Is Your Surveillance System Working Against You?</h2>
+    </div>
+    <div class="pain-grid">
+      <div class="pain-card reveal">
+        <div class="pain-icon">
+          <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/><line x1="12" y1="15" x2="12" y2="18"/></svg>
+        </div>
+        <h3>Forced Licensing Fees</h3>
+        <p>Paying thousands in annual cloud fees just to keep your cameras running? Some platforms even disable your hardware when subscriptions lapse — turning your investment into dead weight.</p>
+      </div>
+      <div class="pain-card reveal">
+        <div class="pain-icon">
+          <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6L6 18M6 6l12 12"/><circle cx="6" cy="6" r="3"/><circle cx="18" cy="18" r="3"/></svg>
+        </div>
+        <h3>Closed Ecosystem Lock-In</h3>
+        <p>Locked into a single vendor? Many platforms refuse to work with your existing cameras, forcing a costly rip-and-replace of perfectly good equipment.</p>
+      </div>
+      <div class="pain-card reveal">
+        <div class="pain-icon">
+          <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="6" height="6" rx="1"/><rect x="16" y="2" width="6" height="6" rx="1"/><rect x="9" y="16" width="6" height="6" rx="1"/><path d="M5 8v3a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8M12 13v3"/></svg>
+        </div>
+        <h3>Fragmented Management</h3>
+        <p>Juggling multiple dashboards for cameras, switches, and power? When a camera goes offline, troubleshooting across disconnected systems wastes hours — not minutes.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ==================== SOLUTION OVERVIEW ==================== -->
+<section class="solution-section section-pad" id="solution">
+  <div class="container">
+    <div class="text-center reveal">
+      <h2>One Cloud Platform. Complete AI Surveillance.</h2>
+    </div>
+    <div class="solution-content">
+      <div class="solution-text reveal">
+        <p>EnGenius AI Cloud Surveillance combines <span class="solution-highlight">edge AI processing</span>, built-in storage, and unified cloud management into a single ecosystem.</p>
+        <p>Every camera runs a dedicated Neural Processing Unit that analyzes video on-device — detecting people, vehicles, and objects in real time. Only lightweight metadata travels to the cloud, keeping bandwidth low and privacy intact.</p>
+        <p>No NVR servers. No forced subscriptions. Just intelligent cameras that work — even when the internet doesn't.</p>
+      </div>
+      <div class="arch-anim reveal">
+        <div class="arch-row">
+          <div class="arch-node">
+            <div class="arch-node-icon cam">
+              <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
+            </div>
+            Edge AI Camera
+          </div>
+          <div class="arch-arrow">
+            <div class="arch-arrow-line"></div>
+            <div class="arch-arrow-label">Metadata only</div>
+          </div>
+          <div class="arch-node">
+            <div class="arch-node-icon cloud">
+              <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"><path d="M18 10h-1.26A8 8 0 1 0 9 20h9a5 5 0 0 0 0-10z"/></svg>
+            </div>
+            EnGenius Cloud
+          </div>
+          <div class="arch-arrow">
+            <div class="arch-arrow-line"></div>
+            <div class="arch-arrow-label">Real-time alerts</div>
+          </div>
+          <div class="arch-node">
+            <div class="arch-node-icon dash">
+              <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+            </div>
+            Dashboard
+          </div>
+        </div>
+        <div class="arch-status"><span class="arch-status-dot"></span> All systems online</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ==================== FEATURES ==================== -->
+<section class="features-section section-pad" id="features">
+  <div class="container">
+    <div class="text-center features-header reveal">
+      <h2>Intelligence Built into Every Camera</h2>
+    </div>
+
+    <!-- 4a: Edge AI Detection -->
+    <div class="feature-block reveal">
+      <div class="feature-text">
+        <div class="feature-label">Edge AI Processing</div>
+        <h3>Detect, Don't Just Record</h3>
+        <p>Every camera runs a built-in Neural Processing Unit that processes video at the edge — no cloud round-trip, no bandwidth strain.</p>
+        <p>Detect and classify people and vehicles in real time. Set virtual tripwires for cross-line counting. Monitor restricted zones for unauthorized entry. All analytics happen on-device — alerts arrive in milliseconds, not minutes.</p>
+      </div>
+      <div class="feature-visual">
+        <div class="detect-anim">
+          <div class="detect-scene">
+            <div class="detect-person"></div>
+            <div class="detect-vehicle"></div>
+            <div class="detect-tripwire"></div>
+            <div class="detect-tripwire-label">Tripwire</div>
+            <div class="detect-counter">Count: 12</div>
+            <div class="detect-hud">CAM-01 | LIVE | 2592×1944</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 4b: Facial Recognition & LPR -->
+    <div class="feature-block reverse reveal">
+      <div class="feature-text">
+        <div class="feature-label">Facial Recognition & LPR</div>
+        <h3>Know Who's There — Instantly</h3>
+        <p>The ECC500 flagship camera takes AI further with on-device facial recognition and license plate reading.</p>
+        <p>Flag specific individuals for instant alerts. Track visitor timelines with face-to-face search. Read and log license plates at entrances and loading docks — searchable across your entire network.</p>
+        <p>Identification happens at the edge, keeping sensitive biometric data off the cloud.</p>
+      </div>
+      <div class="feature-visual">
+        <div class="facerec-anim">
+          <div class="facerec-panel">
+            <div class="facerec-panel-title">Facial Recognition</div>
+            <div class="face-circle">
+              <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+            </div>
+            <div class="face-tag">Recognized: John D.</div>
+          </div>
+          <div class="facerec-panel">
+            <div class="facerec-panel-title">License Plate Recognition</div>
+            <div class="lpr-plate">ABC-1234</div>
+            <div class="lpr-result">Plate logged &bull; Entrance Gate A</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 4c: Custom Alerts -->
+    <div class="feature-block reveal">
+      <div class="feature-text">
+        <div class="feature-label">Custom Alert Rules</div>
+        <h3>Your Rules. Instant Alerts.</h3>
+        <p>Define exactly what matters — and silence everything else.</p>
+        <p>Set up restricted area detection for after-hours zones. Create cross-line alerts at entry points. Trigger loitering notifications when someone lingers too long. Get tampering alerts if a camera is blocked or moved.</p>
+        <p>Route alerts by priority — push critical events to your phone, send routine logs to email, or forward to your SIEM via webhook.</p>
+      </div>
+      <div class="feature-visual">
+        <div class="alerts-anim">
+          <div class="alerts-scene">
+            <div class="alerts-zone"></div>
+            <div class="alerts-zone-label">Restricted Zone</div>
+            <div class="alerts-time">22:47:03 | After Hours</div>
+            <div class="alerts-intruder"></div>
+            <div class="alerts-notif">
+              <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+              Intrusion Detected — Zone A
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 4d: Edge Storage -->
+    <div class="feature-block reverse reveal">
+      <div class="feature-text">
+        <div class="feature-label">Built-in Edge Storage</div>
+        <h3>No NVR. No Single Point of Failure.</h3>
+        <p>Each camera stores footage locally on up to 512 GB of built-in solid-state storage — no external hard drives, no server racks.</p>
+        <p>If your network drops, recording continues. When connectivity returns, everything syncs to the cloud.</p>
+        <p>With IP67 weatherproofing, IK10 vandal resistance, and operation down to −40°C, these cameras survive where it matters most.</p>
+      </div>
+      <div class="feature-visual">
+        <div class="storage-anim">
+          <div class="storage-flow">
+            <div class="storage-node">
+              <div class="storage-node-icon">
+                <svg viewBox="0 0 24 24" stroke="#03A9F4" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
+              </div>
+              <div class="storage-node-label">AI Camera</div>
+            </div>
+            <div class="storage-conn">
+              <div class="storage-conn-line" style="width:100%;height:100%;"></div>
+            </div>
+            <div class="storage-node">
+              <div class="storage-node-icon">
+                <svg viewBox="0 0 24 24" stroke="#FFA200" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M18 10h-1.26A8 8 0 1 0 9 20h9a5 5 0 0 0 0-10z"/></svg>
+              </div>
+              <div class="storage-node-label">Cloud</div>
+            </div>
+          </div>
+          <div class="storage-status">
+            <div class="storage-status-text">
+              <span class="storage-rec-dot"></span> Recording locally &bull; 512 GB SSD
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 4e: Natural Language Search -->
+    <div class="feature-block reveal">
+      <div class="feature-text">
+        <div class="feature-label">AI-Powered Search</div>
+        <h3>Ask Anything. Find Everything.</h3>
+        <p>Search hours of footage in seconds — using plain language. Type "person with backpack near entrance, yesterday afternoon" and get exactly the clips you need.</p>
+        <p>Powered by generative AI, the search engine understands context, not just keywords. It works in any language, across all cameras.</p>
+        <p>Stop scrubbing timelines. Start asking questions.</p>
+      </div>
+      <div class="feature-visual">
+        <div class="search-anim">
+          <div class="search-ui">
+            <div class="search-bar">
+              <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+              <div class="search-bar-text">
+                <span class="typing-text">person with backpack near entrance</span><span class="typing-cursor"></span>
+              </div>
+            </div>
+            <div class="search-results">
+              <div class="search-result-card">
+                <div class="result-thumb"><svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"><polygon points="5 3 19 12 5 21 5 3"/></svg></div>
+                <div class="result-meta"><span>CAM-01</span> &bull; 14:32:07</div>
+              </div>
+              <div class="search-result-card">
+                <div class="result-thumb"><svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"><polygon points="5 3 19 12 5 21 5 3"/></svg></div>
+                <div class="result-meta"><span>CAM-03</span> &bull; 14:45:21</div>
+              </div>
+              <div class="search-result-card">
+                <div class="result-thumb"><svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"><polygon points="5 3 19 12 5 21 5 3"/></svg></div>
+                <div class="result-meta"><span>CAM-01</span> &bull; 15:03:44</div>
+              </div>
+              <div class="search-result-card">
+                <div class="result-thumb"><svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"><polygon points="5 3 19 12 5 21 5 3"/></svg></div>
+                <div class="result-meta"><span>CAM-07</span> &bull; 15:18:55</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 4f: Unified Dashboard -->
+    <div class="feature-block reverse reveal">
+      <div class="feature-text">
+        <div class="feature-label">Unified Cloud Management</div>
+        <h3>Cameras, Network, Power — One Login.</h3>
+        <p>EnGenius Cloud manages your entire infrastructure. Access points, switches, gateways, and smart PDUs all live alongside your surveillance feeds.</p>
+        <p>When a camera goes offline, trace the issue to the exact switch port in seconds. When a remote device freezes, your cloud-managed PDU auto-reboots it — no truck roll needed.</p>
+        <p>Monitor from your desk or the Cloud To-Go mobile app. One login. Full visibility.</p>
+      </div>
+      <div class="feature-visual">
+        <div class="dashboard-anim">
+          <div class="dash-tabs">
+            <div class="dash-tab active" data-panel="0"></div>
+            <div class="dash-tab" data-panel="1"></div>
+            <div class="dash-tab" data-panel="2"></div>
+          </div>
+          <div class="dash-container">
+            <!-- Panel 1: Camera Grid -->
+            <div class="dash-panel active" data-index="0">
+              <div class="dash-panel-title"><span class="dot" style="background:#EA3D56"></span> Live Camera Feeds</div>
+              <div class="dash-cam-grid">
+                <div class="dash-cam-cell"><svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round" stroke-width="1"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg><span class="cam-label">Lobby</span><span class="cam-live">LIVE</span></div>
+                <div class="dash-cam-cell"><svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round" stroke-width="1"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg><span class="cam-label">Parking A</span><span class="cam-live">LIVE</span></div>
+                <div class="dash-cam-cell"><svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round" stroke-width="1"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg><span class="cam-label">Entrance</span><span class="cam-live">LIVE</span></div>
+                <div class="dash-cam-cell"><svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round" stroke-width="1"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg><span class="cam-label">Warehouse</span><span class="cam-live">LIVE</span></div>
+              </div>
+            </div>
+            <!-- Panel 2: Topology -->
+            <div class="dash-panel" data-index="1">
+              <div class="dash-panel-title"><span class="dot" style="background:#03A9F4"></span> Network Topology</div>
+              <div class="dash-topo">
+                <div class="topo-node router"><svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"><rect x="2" y="2" width="20" height="8" rx="2" ry="2"/><rect x="2" y="14" width="20" height="8" rx="2" ry="2"/><line x1="6" y1="6" x2="6.01" y2="6"/><line x1="6" y1="18" x2="6.01" y2="18"/></svg></div>
+                <div class="topo-node switch1"><svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg></div>
+                <div class="topo-node switch2"><svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg></div>
+                <div class="topo-node cam1"><svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg></div>
+                <div class="topo-node cam2"><svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg></div>
+                <div class="topo-node cam3"><svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg></div>
+              </div>
+            </div>
+            <!-- Panel 3: PDU -->
+            <div class="dash-panel" data-index="2">
+              <div class="dash-panel-title"><span class="dot" style="background:#4CAF50"></span> Smart PDU — Power Status</div>
+              <div class="dash-pdu-grid">
+                <div class="pdu-outlet"><div class="pdu-status on"></div><div class="pdu-label">Outlet 1</div><div class="pdu-watts">12.4W</div></div>
+                <div class="pdu-outlet"><div class="pdu-status on"></div><div class="pdu-label">Outlet 2</div><div class="pdu-watts">8.7W</div></div>
+                <div class="pdu-outlet"><div class="pdu-status on"></div><div class="pdu-label">Outlet 3</div><div class="pdu-watts">15.2W</div></div>
+                <div class="pdu-outlet"><div class="pdu-status off"></div><div class="pdu-label">Outlet 4</div><div class="pdu-watts">—</div></div>
+                <div class="pdu-outlet"><div class="pdu-status on"></div><div class="pdu-label">Outlet 5</div><div class="pdu-watts">6.1W</div></div>
+                <div class="pdu-outlet"><div class="pdu-status on"></div><div class="pdu-label">Outlet 6</div><div class="pdu-watts">11.8W</div></div>
+                <div class="pdu-outlet"><div class="pdu-status on"></div><div class="pdu-label">Outlet 7</div><div class="pdu-watts">9.3W</div></div>
+                <div class="pdu-outlet"><div class="pdu-status on"></div><div class="pdu-label">Outlet 8</div><div class="pdu-watts">14.6W</div></div>
+              </div>
+            </div>
+            <!-- Alert toast -->
+            <div class="dash-alert-toast" id="dashToast">
+              <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+              ECC500-Lobby reconnected
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ==================== PRODUCTS ==================== -->
+<section class="products-section section-pad" id="products">
+  <div class="container">
+    <div class="text-center reveal">
+      <h2>Choose Your AI Camera</h2>
+      <p style="color:#666;margin-top:12px;max-width:600px;margin-left:auto;margin-right:auto;">From compact domes to rugged outdoor bullets — and edge AI servers that bring intelligence to your existing cameras.</p>
+    </div>
+    <div class="products-grid">
+      <!-- ECC500 -->
+      <div class="product-card reveal">
+        <div class="product-img"><img src="assets/images/ECC500_S1_20241210.png" alt="ECC500"></div>
+        <div class="product-model">ECC500</div>
+        <div class="product-name">4K AI Outdoor Dome</div>
+        <ul class="product-specs">
+          <li>8MP (4K) Sony Starvis Sensor</li>
+          <li>512GB Built-in SSD</li>
+          <li>3× Motorized Optical Zoom</li>
+          <li>Facial Recognition & LPR</li>
+          <li>IP67 / IK10 · −40°C to 60°C</li>
+        </ul>
+        <a href="#" class="btn btn-outline" style="width:100%;text-align:center;">View Specs</a>
+      </div>
+      <!-- ECC120 -->
+      <div class="product-card reveal">
+        <div class="product-img"><img src="assets/images/ECC120_S1-R_20241108.png" alt="ECC120"></div>
+        <div class="product-model">ECC120</div>
+        <div class="product-name">5MP AI Outdoor Bullet</div>
+        <ul class="product-specs">
+          <li>5MP Sony Starvis Sensor</li>
+          <li>256GB Built-in SSD</li>
+          <li>103° Diagonal Field of View</li>
+          <li>30m IR Night Vision</li>
+          <li>IP66 · −20°C to 50°C</li>
+        </ul>
+        <a href="#" class="btn btn-outline" style="width:100%;text-align:center;">View Specs</a>
+      </div>
+      <!-- ECC100 -->
+      <div class="product-card reveal">
+        <div class="product-img"><img src="assets/images/ECC100_S1_20240306.png" alt="ECC100"></div>
+        <div class="product-model">ECC100</div>
+        <div class="product-name">5MP AI Outdoor Dome</div>
+        <ul class="product-specs">
+          <li>5MP Sony Starvis Sensor</li>
+          <li>256GB Built-in SSD</li>
+          <li>132° Ultra-Wide View</li>
+          <li>Built-in Microphone</li>
+          <li>IP67 / IK10 · −20°C to 50°C</li>
+        </ul>
+        <a href="#" class="btn btn-outline" style="width:100%;text-align:center;">View Specs</a>
+      </div>
+    </div>
+    <!-- NVS Row -->
+    <div class="products-nvs-row">
+      <div class="product-card reveal">
+        <span class="nvs-badge">AI-NVS</span>
+        <div class="product-img"><img src="assets/images/EVS1002D_2bay_01.png" alt="EVS1002D"></div>
+        <div class="product-model">EVS1002D</div>
+        <div class="product-name">AI Network Video System (2-Bay)</div>
+        <ul class="product-specs">
+          <li>Add AI to Existing ONVIF Cameras</li>
+          <li>2-Bay Storage · RAID 1</li>
+          <li>GPU-Powered Edge AI Engine</li>
+          <li>Up to 16 Third-Party + 30 EnGenius Cameras</li>
+        </ul>
+        <a href="#" class="btn btn-outline" style="width:100%;text-align:center;">View Specs</a>
+      </div>
+      <div class="product-card reveal">
+        <span class="nvs-badge">AI-NVS</span>
+        <div class="product-img"><img src="assets/images/EVS1004D_4bay_01.png" alt="EVS1004D"></div>
+        <div class="product-model">EVS1004D</div>
+        <div class="product-name">AI Network Video System (4-Bay)</div>
+        <ul class="product-specs">
+          <li>Add AI to Existing ONVIF Cameras</li>
+          <li>4-Bay Storage · RAID 1/5/6</li>
+          <li>GPU-Powered Edge AI Engine</li>
+          <li>Up to 16 Third-Party + 30 EnGenius Cameras</li>
+        </ul>
+        <a href="#" class="btn btn-outline" style="width:100%;text-align:center;">View Specs</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ==================== TCO ==================== -->
+<section class="tco-section section-pad" id="savings">
+  <div class="container">
+    <div class="text-center reveal">
+      <h2 style="color:#fff">Save Up to 80% Over 5 Years</h2>
+      <p style="color:rgba(255,255,255,.55);margin-top:12px;">No mandatory licensing. No NVR hardware. No hidden costs.</p>
+    </div>
+    <div class="tco-grid">
+      <div class="tco-card reveal">
+        <div class="tco-card-icon">
+          <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+        </div>
+        <h3>Zero Forced Subscriptions</h3>
+        <p>Core AI detection, edge storage, and cloud management are included at no recurring cost. Your cameras keep working — even if budgets get frozen.</p>
+      </div>
+      <div class="tco-card reveal">
+        <div class="tco-card-icon">
+          <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"><rect x="2" y="2" width="20" height="8" rx="2" ry="2"/><rect x="2" y="14" width="20" height="8" rx="2" ry="2"/><line x1="6" y1="6" x2="6.01" y2="6"/><line x1="6" y1="18" x2="6.01" y2="18"/></svg>
+        </div>
+        <h3>No NVR to Buy or Maintain</h3>
+        <p>Built-in solid-state storage on every camera eliminates dedicated recording servers, hard drive arrays, and the IT overhead to maintain them.</p>
+      </div>
+      <div class="tco-card reveal">
+        <div class="tco-card-icon">
+          <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+        </div>
+        <h3>Hardware You Actually Own</h3>
+        <p>When you buy an EnGenius camera, it's yours. No platform will disable it for missing a renewal. No forced rip-and-replace to access new features.</p>
+      </div>
+    </div>
+    <div class="tco-quote reveal">
+      <p>Enterprise-grade AI surveillance.<br><span>A fraction of the long-term cost.</span></p>
+    </div>
+    <div class="tco-disclaimer">
+      Based on a 50-camera deployment over 5 years compared to leading cloud surveillance platforms with mandatory subscriptions. Actual results vary by configuration.
+    </div>
+  </div>
+</section>
+
+<!-- ==================== USE CASES ==================== -->
+<section class="usecases-section section-pad" id="industries">
+  <div class="container">
+    <div class="text-center reveal">
+      <h2>Trusted Across Industries</h2>
+      <p style="color:#666;margin-top:12px;">From retail stores to school campuses, EnGenius AI surveillance adapts to your environment and scales with your business.</p>
+    </div>
+    <div class="usecases-grid">
+      <div class="usecase-card reveal">
+        <div class="usecase-img"><svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg></div>
+        <div class="usecase-content">
+          <h3>Retail & Loss Prevention</h3>
+          <p>Monitor customer flow, detect suspicious behavior, and reduce shrinkage with AI analytics — across every store, from one dashboard.</p>
+        </div>
+      </div>
+      <div class="usecase-card reveal">
+        <div class="usecase-img"><svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg></div>
+        <div class="usecase-content">
+          <h3>K-12 & Campus Security</h3>
+          <p>Secure campuses with intelligent perimeter detection and instant alerts. Cloud management simplifies compliance — no dedicated IT staff required at every site.</p>
+        </div>
+      </div>
+      <div class="usecase-card reveal">
+        <div class="usecase-img"><svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg></div>
+        <div class="usecase-content">
+          <h3>Hotels & Hospitality</h3>
+          <p>Cover lobbies, parking areas, and back-of-house operations with cameras that work day and night — managed remotely across all properties.</p>
+        </div>
+      </div>
+      <div class="usecase-card reveal">
+        <div class="usecase-img"><svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg></div>
+        <div class="usecase-content">
+          <h3>Healthcare & Senior Living</h3>
+          <p>Ensure resident safety with 24/7 monitoring, AI-triggered alerts for unusual activity, and NDAA-compliant hardware that meets regulatory requirements.</p>
+        </div>
+      </div>
+      <div class="usecase-card reveal">
+        <div class="usecase-img"><svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"><rect x="1" y="3" width="15" height="13"/><polygon points="16 8 20 5 20 16 16 13 16 8"/></svg></div>
+        <div class="usecase-content">
+          <h3>Warehouses & Logistics</h3>
+          <p>Cover large indoor spaces with high-resolution cameras built to withstand dust, moisture, and impact. AI counting tracks movement across loading zones.</p>
+        </div>
+      </div>
+      <div class="usecase-card reveal">
+        <div class="usecase-img"><svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg></div>
+        <div class="usecase-content">
+          <h3>Multi-site & Franchise</h3>
+          <p>Deploy cameras at new locations in minutes with zero-touch provisioning. Manage hundreds of sites from a single cloud dashboard — no truck rolls.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ==================== CTA ==================== -->
+<section class="cta-section section-pad" id="trial">
+  <div class="hero-bg-grid"></div>
+  <div class="container cta-content">
+    <h2>See AI Surveillance in Action</h2>
+    <p>Start a free trial of EnGenius Cloud or schedule a live demo with our team.</p>
+    <div class="cta-buttons">
+      <button class="btn btn-primary" onclick="document.getElementById('trialForm').classList.toggle('visible')">Start Free Trial</button>
+      <a href="#" class="btn btn-secondary">Talk to Sales</a>
+    </div>
+    <div class="cta-form" id="trialForm">
+      <div class="form-grid">
+        <div class="form-group">
+          <label>First Name *</label>
+          <input type="text" placeholder="John" required>
+        </div>
+        <div class="form-group">
+          <label>Last Name *</label>
+          <input type="text" placeholder="Smith" required>
+        </div>
+        <div class="form-group">
+          <label>Business Email *</label>
+          <input type="email" placeholder="john@company.com" required>
+        </div>
+        <div class="form-group">
+          <label>Company *</label>
+          <input type="text" placeholder="Acme Corp" required>
+        </div>
+        <div class="form-group">
+          <label>Phone</label>
+          <input type="tel" placeholder="+1 (555) 000-0000">
+        </div>
+        <div class="form-group">
+          <label>Country</label>
+          <select>
+            <option value="">Select country</option>
+            <option>United States</option>
+            <option>Canada</option>
+            <option>United Kingdom</option>
+            <option>Australia</option>
+            <option>Germany</option>
+            <option>France</option>
+            <option>Japan</option>
+            <option>Taiwan</option>
+            <option>Singapore</option>
+            <option>Other</option>
+          </select>
+        </div>
+        <div class="form-group full">
+          <label>Number of Cameras</label>
+          <select>
+            <option value="">Select range</option>
+            <option>1 – 10</option>
+            <option>11 – 50</option>
+            <option>51 – 200</option>
+            <option>200+</option>
+          </select>
+        </div>
+        <div class="form-submit full">
+          <button type="button" class="btn btn-primary">Start My Free Trial</button>
+        </div>
+      </div>
+      <div class="form-note">No credit card required. Get instant access to EnGenius Cloud and explore AI surveillance features with a demo environment.</div>
+    </div>
+  </div>
+</section>
+
+<!-- ==================== FOOTER ==================== -->
+<footer class="site-footer">
+  <div class="container">
+    <div class="footer-logo">
+      <img src="assets/logos/EnGenius%20Cloud_White_Horizontal.png" alt="EnGenius Cloud">
+    </div>
+    <div class="footer-links">
+      <a href="#">Products</a>
+      <a href="#">Solutions</a>
+      <a href="#">Partner Program</a>
+      <a href="#">Support</a>
+      <a href="#">Contact</a>
+    </div>
+    <div class="footer-copy">&copy; 2026 EnGenius Technologies, Inc. All rights reserved.</div>
+  </div>
+</footer>
+
+<!-- ==================== SCRIPTS ==================== -->
+<script>
+// Scroll reveal
+const reveals = document.querySelectorAll('.reveal');
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      entry.target.classList.add('visible');
+    }
+  });
+}, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
+reveals.forEach(el => observer.observe(el));
+
+// Dashboard panel rotation
+const panels = document.querySelectorAll('.dash-panel');
+const tabs = document.querySelectorAll('.dash-tab');
+const toast = document.getElementById('dashToast');
+let currentPanel = 0;
+
+function rotateDashboard() {
+  panels.forEach(p => p.classList.remove('active'));
+  tabs.forEach(t => t.classList.remove('active'));
+  currentPanel = (currentPanel + 1) % panels.length;
+  panels[currentPanel].classList.add('active');
+  tabs[currentPanel].classList.add('active');
+
+  // Show toast on panel 0
+  if (currentPanel === 0) {
+    setTimeout(() => {
+      toast.style.opacity = '1';
+      toast.style.transform = 'translateY(0)';
+      setTimeout(() => {
+        toast.style.opacity = '0';
+        toast.style.transform = 'translateY(-10px)';
+      }, 2500);
+    }, 500);
+  }
+}
+toast.style.transition = 'opacity .4s, transform .4s';
+toast.style.transform = 'translateY(-10px)';
+setInterval(rotateDashboard, 3500);
+</script>
+</body>
+</html>
