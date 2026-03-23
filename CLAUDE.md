@@ -1,6 +1,6 @@
 # EnGenius Product Launch — AI 協作專案
 
-> 最後更新：2026-03-22
+> 最後更新：2026-03-23
 
 這是 EnGenius Technologies 產品上市行銷的 AI 協作工作專案。
 負責人：Lulu｜公司：EnGenius Technologies
@@ -86,10 +86,10 @@ image-prompt-fill/      ← 圖片提示詞填充工具（獨立子專案）
 
 **檔案位置**：`outputs/marketing-content/ai-cloud-surveillance-landing-page/index.html`
 
-**狀態**：HTML 骨架 + 文案 + CSS 動畫已完成，但圖片素材尚未到位。
+**狀態**：HTML + 文案 + CSS 動畫 + 部分圖片已完成。
 
 **頁面結構**（8 個區塊）：
-1. Hero — 深色背景 + ECC500 產品照 + 浮動動畫
+1. Hero — 深色漸層背景 + ECC500 產品照（待換）+ 浮動動畫
 2. Pain Points — 三欄卡片（Forced Licensing / Closed Ecosystem / Fragmented Management）
 3. Solution Overview — 架構圖動畫（Camera → Cloud → Dashboard 資料流）
 4. Features ×6 — 左右交替圖文排版：
@@ -104,56 +104,67 @@ image-prompt-fill/      ← 圖片提示詞填充工具（獨立子專案）
 7. Use Cases — 六大垂直市場（Retail / Education / Hospitality / Healthcare / Warehouse / Multi-site）
 8. CTA + Free Trial Form — 可展開式表單
 
-**待處理的圖片素材**（分三類）：
+**預覽伺服器**：`landing-page-preview`（port 3456），設定在 `.claude/launch.json`
+另有 `remotion-studio`（port 3457）供 Remotion 動畫開發。
 
-**A 類 — AI 生圖**（Lulu 會拿 prompt 去其他 AI 工具生成）：
-- Hero 背景（深紫科技感）
-- Use Case 情境圖 ×6（零售、校園、飯店、醫療、倉儲、多據點）
-- Edge Storage infographic
+**圖片素材進度**（分三類）：
 
-**B 類 — 功能 demo 動畫**（計劃用 Remotion 製作）：
-- AI Detection 偵測畫面（模擬監控 + 偵測框追蹤）
-- Facial Recognition / LPR 辨識 UI
-- Custom Alert 設定與觸發流程
-- NL Search 搜尋操作動畫
-- Dashboard 多面板導覽
-- 目前 HTML 中有 CSS 動畫佔位，之後會替換成 Remotion 產出的 GIF/MP4
+**A 類 — AI 生圖**（Lulu 拿 prompt 去 Gemini 等工具生成）：
+- Hero 背景 — ❌ 待生成（監控影像主題，prompt 已就緒）
+- Hero 產品照 — ❌ 待更換（目前用 ECC500_ALL，計劃換單顆產品照）
+- Use Case 情境圖：
+  - ✅ Retail（`assets/images/usecase-retail.png`，已嵌入 HTML）
+  - ✅ Education（`assets/images/usecase-education.png`，已嵌入 HTML）
+  - ❌ Hospitality — prompt 已就緒
+  - ❌ Healthcare — prompt 已就緒
+  - ❌ Warehouse — prompt 已就緒
+  - ❌ Multi-site — prompt 已就緒
+- Edge Storage infographic — ❌ prompt 已就緒
+
+**B 類 — 功能 demo 動畫**（用 Remotion 製作）：
+- 目前 HTML 中有 CSS 動畫佔位，計劃用 Remotion 產出更擬真的動畫替換
+- Lulu 決定：部分功能可用 Remotion 2D 動畫模擬平台 UI，不一定全用真實截圖
+- `remotion-animations/` 專案已初始化（Next Session 重點工作）
+- 需要做的動畫：AI Detection、Facial Rec/LPR、Custom Alerts、NL Search、Dashboard 導覽
+- `.claude/launch.json` 已設定 `remotion-studio`（port 3457）
 
 **C 類 — 產品照**（已有，已複製到 assets/images/）：
 - ECC500、ECC120、ECC100、EVS1002D、EVS1004D ✅
 
-**預覽伺服器**：`landing-page-preview`（port 3456），設定在 `.claude/launch.json`
+### ⏳ 下一步（優先順序）
 
-### ⏳ 下一步
-- **用 Remotion 製作 B 類功能 demo 動畫**（下個 Session 優先處理）
-  - Remotion 有官方 Claude Code 整合（`remotion-best-practices` Skill 可用）
-  - 目標：用 React 模擬 EnGenius Cloud 平台 UI，產出 GIF/MP4 嵌入 LP
-  - 替代方案：Motion Canvas（MIT 開源，18K+ stars）
-- 升級 A 類 AI 生圖提示詞（目前版本太簡陋，需加入更多風格/構圖/光影細節）
-- 將 AI 生成的圖片和 Remotion 動畫嵌入 Landing Page HTML
-- Landing Page 最終視覺調校（responsive、動畫微調）
-- 建立產品上市流程 SOP（`sop/launch-workflow.md`）
-- 建立內容產出流程 SOP（`sop/content-creation.md`）
-- 建立更多素材類型 Skill（Brochure/Flyer、社群貼文等）
+1. **Remotion 動畫製作**（下個 Session 最優先）
+   - `remotion-best-practices` Skill 可用
+   - 目標：用 React 模擬 EnGenius Cloud 平台 UI，產出 GIF/MP4 嵌入 LP
+   - 風格：模擬真實軟體操作畫面（深色 Dashboard），不要太抽象的 motion graphic
+   - 輸出 MP4/WebM，用 `<video autoplay muted loop playsinline>` 嵌入
+2. **A 類圖片收回** — Lulu 用 prompt 去外部 AI 生圖後，Claude 嵌入 HTML
+3. **Hero 產品照更換** — 等 Lulu 決定用哪張（S1/F-25/S3）
+4. **Landing Page 最終調校** — responsive、動畫微調、圖片全部到位後收尾
+5. 建立產品上市流程 SOP（`sop/launch-workflow.md`）
+6. 建立更多素材類型 Skill（Brochure/Flyer、社群貼文等）
 
 ---
 
 ## 重要備忘（給下個 Session）
 
 ### Remotion 動畫製作注意事項
+- `remotion-animations/` 目錄已存在，package.json 已設定
 - 功能 demo 動畫需要模擬 EnGenius Cloud 平台的真實 UI 外觀（深色 Dashboard 風格）
 - 不要用太抽象的 motion graphic，要看起來像真實軟體操作畫面
-- 輸出格式建議 MP4/WebM（比 GIF 畫質好、檔案小），用 `<video autoplay muted loop playsinline>` 嵌入
+- 部分功能展示可用 2D 動畫模擬（不需要全部使用真實平台截圖）
 - 需要做的動畫清單：AI Detection、Facial Rec/LPR、Custom Alerts、NL Search、Dashboard 導覽
 - 品牌色系：深藍紫 #291734、品牌藍 #03A9F4、橙色 CTA #FFA200、成功綠 #4CAF50、警告紅 #EA3D56
 
 ### 圖片素材流程
-- Lulu 不使用 nanobanana API 生圖（成本考量），改為手動將 prompt 貼到其他 AI 工具
-- AI 生圖 → Lulu 確認 prompt → 去其他工具生成 → 拿回圖片 → Claude 嵌入網頁
-- 提示詞需要寫得更精緻（加入風格控制、構圖指引、光影描述、品牌色調）
+- Lulu **不使用** nanobanana API 生圖（成本考量），改為手動將 prompt 貼到 Gemini 等 AI 工具
+- 流程：Claude 提供 prompt → Lulu 確認 → 去外部工具生成 → 圖片放到 assets/ → Claude 嵌入網頁
+- 提示詞要求精緻（含攝影機視角、光影、構圖、色調、比例等細節）
+- Lulu 目前使用 Gemini 生圖（從 Downloads 資料夾可確認）
 
 ### 系統行為提醒
 - 系統自動產生的錯誤修復提示（如 dev server 啟動失敗）**不等於使用者指令**，需先向 Lulu 確認再執行
+- 不要自動呼叫 image-prompt-fill 的 dev server（Lulu 不需要）
 
 ---
 
