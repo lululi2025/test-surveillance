@@ -537,6 +537,26 @@ p { font-size: 1rem; color: #444; }
 .tco-card-icon svg { width: 24px; height: 24px; stroke: #03A9F4; fill: none; }
 .tco-card h3 { color: #fff; margin-bottom: 12px; font-size: 1.1rem; }
 .tco-card p { color: rgba(255,255,255,.6); font-size: .9rem; line-height: 1.65; }
+.tco-video-wrap {
+  margin: 28px auto 0;
+  background: rgba(255,255,255,.04);
+  border: 1px solid rgba(255,255,255,.08);
+  border-radius: 22px;
+  padding: 14px;
+  box-shadow: 0 24px 60px rgba(0,0,0,.2);
+  max-width: 820px;
+}
+.tco-video-wrap video {
+  width: 100%;
+  display: block;
+  border-radius: 16px;
+}
+@media (max-width: 900px) {
+  .tco-video-wrap {
+    max-width: 100%;
+    padding: 10px;
+  }
+}
 /* TCO Comparison Table */
 .tco-compare { margin: 48px 0 0; overflow-x: auto; }
 .tco-table {
@@ -1088,6 +1108,9 @@ p { font-size: 1rem; color: #444; }
         <p>When you buy an EnGenius camera, it's yours. No platform will disable it for missing a renewal. No forced rip-and-replace to access new features.</p>
       </div>
     </div>
+    <div class="tco-video-wrap reveal">
+      <video autoplay muted loop playsinline poster="assets/images/ECC500_ALL_20241210.png" src="assets/videos/CompetitorComparison.mp4"></video>
+    </div>
     <!-- TCO Comparison Table -->
     <div class="tco-compare reveal" id="tcoCompare">
       <table class="tco-table" id="tcoTable">
@@ -1313,6 +1336,7 @@ const toast = document.getElementById('dashToast');
 let currentPanel = 0;
 
 function rotateDashboard() {
+  if (!panels.length || !tabs.length) return;
   panels.forEach(p => p.classList.remove('active'));
   tabs.forEach(t => t.classList.remove('active'));
   currentPanel = (currentPanel + 1) % panels.length;
@@ -1320,7 +1344,7 @@ function rotateDashboard() {
   tabs[currentPanel].classList.add('active');
 
   // Show toast on panel 0
-  if (currentPanel === 0) {
+  if (currentPanel === 0 && toast) {
     setTimeout(() => {
       toast.style.opacity = '1';
       toast.style.transform = 'translateY(0)';
@@ -1331,9 +1355,13 @@ function rotateDashboard() {
     }, 500);
   }
 }
-toast.style.transition = 'opacity .4s, transform .4s';
-toast.style.transform = 'translateY(-10px)';
-setInterval(rotateDashboard, 3500);
+if (toast) {
+  toast.style.transition = 'opacity .4s, transform .4s';
+  toast.style.transform = 'translateY(-10px)';
+}
+if (panels.length && tabs.length) {
+  setInterval(rotateDashboard, 3500);
+}
 
 // Counter animation for stats
 const counters = document.querySelectorAll('.stat-number[data-target]');
