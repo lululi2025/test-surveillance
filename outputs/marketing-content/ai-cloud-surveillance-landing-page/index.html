@@ -67,6 +67,15 @@ p { font-size: 1rem; color: #444; }
   background: linear-gradient(135deg, #291734 0%, #1a0f22 50%, #0d1b2a 100%);
   overflow: hidden; padding-top: 80px;
 }
+.hero-bg-photo {
+  position: absolute; inset: 0; z-index: 0;
+  background: url('assets/images/Background.png') center center / cover no-repeat;
+  opacity: .25;
+}
+.hero-bg-photo::after {
+  content: ''; position: absolute; inset: 0;
+  background: linear-gradient(135deg, rgba(41,23,52,.85) 0%, rgba(26,15,34,.7) 50%, rgba(13,27,42,.8) 100%);
+}
 .hero-bg-grid {
   position: absolute; inset: 0; opacity: .08;
   background-image:
@@ -528,8 +537,66 @@ p { font-size: 1rem; color: #444; }
 .tco-card-icon svg { width: 24px; height: 24px; stroke: #03A9F4; fill: none; }
 .tco-card h3 { color: #fff; margin-bottom: 12px; font-size: 1.1rem; }
 .tco-card p { color: rgba(255,255,255,.6); font-size: .9rem; line-height: 1.65; }
+/* TCO Comparison Table */
+.tco-compare { margin: 48px 0 0; overflow-x: auto; }
+.tco-table {
+  width: 100%; border-collapse: separate; border-spacing: 0;
+  background: rgba(255,255,255,.03); border-radius: 16px;
+  overflow: hidden; border: 1px solid rgba(255,255,255,.08);
+}
+.tco-table thead th {
+  padding: 16px 20px; font-size: .7rem; font-weight: 700;
+  text-transform: uppercase; letter-spacing: .08em;
+  color: rgba(255,255,255,.4); text-align: center;
+  border-bottom: 1px solid rgba(255,255,255,.08);
+}
+.tco-table thead th:first-child { text-align: left; }
+.tco-table thead th.col-highlight {
+  color: #03A9F4; background: rgba(3,169,244,.06);
+}
+.tco-table tbody td {
+  padding: 14px 20px; font-size: .85rem; color: rgba(255,255,255,.55);
+  border-bottom: 1px solid rgba(255,255,255,.04); text-align: center;
+  vertical-align: middle;
+}
+.tco-table tbody td:first-child {
+  text-align: left; font-weight: 600; color: rgba(255,255,255,.7);
+  font-size: .82rem;
+}
+.tco-table tbody td.col-highlight {
+  background: rgba(3,169,244,.04);
+}
+.tco-table tbody tr:last-child td { border-bottom: none; }
+.tco-check {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 24px; height: 24px; border-radius: 50%;
+}
+.tco-check.yes { background: rgba(76,175,80,.15); color: #4CAF50; }
+.tco-check.no { background: rgba(234,61,86,.1); color: #EA3D56; }
+.tco-check.partial { background: rgba(255,162,0,.1); color: #FFA200; }
+.tco-check svg { width: 14px; height: 14px; stroke: currentColor; fill: none; stroke-width: 2.5; }
+/* Animate rows */
+.tco-table tbody tr {
+  opacity: 0; transform: translateY(10px);
+  transition: opacity .4s ease-out, transform .4s ease-out;
+}
+.tco-table.animated tbody tr { opacity: 1; transform: translateY(0); }
+.tco-table.animated tbody tr:nth-child(1) { transition-delay: .05s; }
+.tco-table.animated tbody tr:nth-child(2) { transition-delay: .1s; }
+.tco-table.animated tbody tr:nth-child(3) { transition-delay: .15s; }
+.tco-table.animated tbody tr:nth-child(4) { transition-delay: .2s; }
+.tco-table.animated tbody tr:nth-child(5) { transition-delay: .25s; }
+.tco-table.animated tbody tr:nth-child(6) { transition-delay: .3s; }
+.tco-table.animated tbody tr:nth-child(7) { transition-delay: .35s; }
+.tco-table.animated tbody tr:nth-child(8) { transition-delay: .4s; }
+.tco-table.animated tbody tr:nth-child(9) { transition-delay: .45s; }
+@media (max-width: 768px) {
+  .tco-table { font-size: .8rem; }
+  .tco-table thead th, .tco-table tbody td { padding: 10px 12px; }
+}
+
 .tco-quote {
-  text-align: center; margin-top: 16px; padding-top: 40px;
+  text-align: center; margin-top: 40px; padding-top: 40px;
   border-top: 1px solid rgba(255,255,255,.08);
 }
 .tco-quote p {
@@ -540,6 +607,36 @@ p { font-size: 1rem; color: #444; }
 .tco-disclaimer {
   text-align: center; margin-top: 20px; font-size: .75rem;
   color: rgba(255,255,255,.35);
+}
+
+/* ===================== BY THE NUMBERS ===================== */
+.stats-strip {
+  background: linear-gradient(135deg, #0d1b2a 0%, #1a0f22 100%);
+  padding: 64px 0; border-top: 1px solid rgba(3,169,244,.1);
+  border-bottom: 1px solid rgba(3,169,244,.1);
+}
+.stats-grid {
+  display: grid; grid-template-columns: repeat(4, 1fr); gap: 32px;
+  text-align: center;
+}
+.stat-item { position: relative; }
+.stat-item:not(:last-child)::after {
+  content: ''; position: absolute; right: -16px; top: 20%; height: 60%;
+  width: 1px; background: rgba(255,255,255,.08);
+}
+.stat-number {
+  font-size: clamp(2rem, 4vw, 3rem); font-weight: 800; color: #fff;
+  line-height: 1; margin-bottom: 8px;
+}
+.stat-number .stat-accent { color: #03A9F4; }
+.stat-label {
+  font-size: .8rem; color: rgba(255,255,255,.45); font-weight: 500;
+  line-height: 1.4;
+}
+@media (max-width: 768px) {
+  .stats-grid { grid-template-columns: repeat(2, 1fr); }
+  .stat-item:not(:last-child)::after { display: none; }
+  .tco-bar-label { min-width: 80px; font-size: .75rem; }
 }
 
 /* ===================== USE CASES ===================== */
@@ -663,6 +760,7 @@ p { font-size: 1rem; color: #444; }
 
 <!-- ==================== HERO ==================== -->
 <section class="hero" id="hero">
+  <div class="hero-bg-photo"></div>
   <div class="hero-bg-grid"></div>
   <div class="hero-glow"></div>
   <div class="container hero-content">
@@ -676,7 +774,7 @@ p { font-size: 1rem; color: #444; }
       </div>
     </div>
     <div class="hero-products">
-      <img src="assets/images/ECC500_ALL_20241210.png" alt="EnGenius AI Camera ECC500" class="hero-product-img">
+      <img src="assets/images/ECC500_S1_20241210.png" alt="EnGenius AI Camera ECC500" class="hero-product-img">
     </div>
   </div>
 </section>
@@ -755,6 +853,30 @@ p { font-size: 1rem; color: #444; }
           </div>
         </div>
         <div class="arch-status"><span class="arch-status-dot"></span> All systems online</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ==================== BY THE NUMBERS ==================== -->
+<section class="stats-strip">
+  <div class="container">
+    <div class="stats-grid">
+      <div class="stat-item reveal">
+        <div class="stat-number" data-target="80"><span class="stat-accent">0</span>%</div>
+        <div class="stat-label">TCO Savings<br>over 5 Years</div>
+      </div>
+      <div class="stat-item reveal">
+        <div class="stat-number" data-target="512"><span class="stat-accent">0</span> GB</div>
+        <div class="stat-label">Built-in<br>Edge Storage</div>
+      </div>
+      <div class="stat-item reveal">
+        <div class="stat-number">$<span class="stat-accent">0</span></div>
+        <div class="stat-label">Mandatory<br>Cloud Fees</div>
+      </div>
+      <div class="stat-item reveal">
+        <div class="stat-number" data-target="25"><span class="stat-accent">0</span>+</div>
+        <div class="stat-label">Years of Networking<br>Expertise</div>
       </div>
     </div>
   </div>
@@ -966,11 +1088,69 @@ p { font-size: 1rem; color: #444; }
         <p>When you buy an EnGenius camera, it's yours. No platform will disable it for missing a renewal. No forced rip-and-replace to access new features.</p>
       </div>
     </div>
+    <!-- TCO Comparison Table -->
+    <div class="tco-compare reveal" id="tcoCompare">
+      <table class="tco-table" id="tcoTable">
+        <thead>
+          <tr>
+            <th></th>
+            <th class="col-highlight">EnGenius<br><span style="font-weight:400;font-size:.6rem;letter-spacing:.02em;opacity:.6">Edge AI + Cloud</span></th>
+            <th>Cloud-Only<br><span style="font-weight:400;font-size:.6rem;letter-spacing:.02em;opacity:.6">Cloud-Dependent VSaaS</span></th>
+            <th>Traditional<br><span style="font-weight:400;font-size:.6rem;letter-spacing:.02em;opacity:.6">NVR-Based Systems</span></th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Zero Mandatory Subscription Fees</td>
+            <td class="col-highlight"><span class="tco-check yes"><svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></span></td>
+            <td><span class="tco-check no"><svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></span></td>
+            <td><span class="tco-check yes"><svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></span></td>
+          </tr>
+          <tr>
+            <td>Hardware Keeps Working if License Expires</td>
+            <td class="col-highlight"><span class="tco-check yes"><svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></span></td>
+            <td><span class="tco-check no"><svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></span></td>
+            <td><span class="tco-check yes"><svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></span></td>
+          </tr>
+          <tr>
+            <td>Built-in Edge Storage — No NVR Required</td>
+            <td class="col-highlight"><span class="tco-check yes"><svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></span></td>
+            <td><span class="tco-check partial"><svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/></svg></span></td>
+            <td><span class="tco-check no"><svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></span></td>
+          </tr>
+          <tr>
+            <td>Continues Recording During Network Outage</td>
+            <td class="col-highlight"><span class="tco-check yes"><svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></span></td>
+            <td><span class="tco-check no"><svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></span></td>
+            <td><span class="tco-check yes"><svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></span></td>
+          </tr>
+          <tr>
+            <td>Cloud-Based Multi-Site Remote Management</td>
+            <td class="col-highlight"><span class="tco-check yes"><svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></span></td>
+            <td><span class="tco-check yes"><svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></span></td>
+            <td><span class="tco-check no"><svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></span></td>
+          </tr>
+          <tr>
+            <td>Open Ecosystem — Integrates Existing ONVIF Cameras</td>
+            <td class="col-highlight"><span class="tco-check yes"><svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></span></td>
+            <td><span class="tco-check no"><svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></span></td>
+            <td><span class="tco-check yes"><svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></span></td>
+          </tr>
+          <tr>
+            <td>No Single Point of Failure (Distributed Storage)</td>
+            <td class="col-highlight"><span class="tco-check yes"><svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></span></td>
+            <td><span class="tco-check yes"><svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></span></td>
+            <td><span class="tco-check no"><svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
     <div class="tco-quote reveal">
       <p>Enterprise-grade AI surveillance.<br><span>A fraction of the long-term cost.</span></p>
     </div>
     <div class="tco-disclaimer">
-      Based on a 50-camera deployment over 5 years compared to leading cloud surveillance platforms with mandatory subscriptions. Actual results vary by configuration.
+      Based on a 50-camera outdoor deployment over 5 years. EnGenius Basic Cloud plan included at no additional cost. Actual savings vary by configuration.
     </div>
   </div>
 </section>
@@ -998,28 +1178,28 @@ p { font-size: 1rem; color: #444; }
         </div>
       </div>
       <div class="usecase-card reveal">
-        <div class="usecase-img"><svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg></div>
+        <div class="usecase-img"><img src="assets/images/Hotel.png" alt="Hotel surveillance"></div>
         <div class="usecase-content">
           <h3>Hotels & Hospitality</h3>
           <p>Cover lobbies, parking areas, and back-of-house operations with cameras that work day and night — managed remotely across all properties.</p>
         </div>
       </div>
       <div class="usecase-card reveal">
-        <div class="usecase-img"><svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg></div>
+        <div class="usecase-img"><img src="assets/images/Healthcare.png" alt="Healthcare surveillance"></div>
         <div class="usecase-content">
           <h3>Healthcare & Senior Living</h3>
           <p>Ensure resident safety with 24/7 monitoring, AI-triggered alerts for unusual activity, and NDAA-compliant hardware that meets regulatory requirements.</p>
         </div>
       </div>
       <div class="usecase-card reveal">
-        <div class="usecase-img"><svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"><rect x="1" y="3" width="15" height="13"/><polygon points="16 8 20 5 20 16 16 13 16 8"/></svg></div>
+        <div class="usecase-img"><img src="assets/images/Warehouses.png" alt="Warehouse surveillance"></div>
         <div class="usecase-content">
           <h3>Warehouses & Logistics</h3>
           <p>Cover large indoor spaces with high-resolution cameras built to withstand dust, moisture, and impact. AI counting tracks movement across loading zones.</p>
         </div>
       </div>
       <div class="usecase-card reveal">
-        <div class="usecase-img"><svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg></div>
+        <div class="usecase-img"><img src="assets/images/Multi-site.png" alt="Multi-site surveillance"></div>
         <div class="usecase-content">
           <h3>Multi-site & Franchise</h3>
           <p>Deploy cameras at new locations in minutes with zero-touch provisioning. Manage hundreds of sites from a single cloud dashboard — no truck rolls.</p>
@@ -1154,6 +1334,44 @@ function rotateDashboard() {
 toast.style.transition = 'opacity .4s, transform .4s';
 toast.style.transform = 'translateY(-10px)';
 setInterval(rotateDashboard, 3500);
+
+// Counter animation for stats
+const counters = document.querySelectorAll('.stat-number[data-target]');
+const counterObserver = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      const el = entry.target;
+      const target = parseInt(el.dataset.target);
+      const accent = el.querySelector('.stat-accent');
+      if (!accent || accent.dataset.done) return;
+      accent.dataset.done = '1';
+      const duration = 1500;
+      const start = performance.now();
+      function tick(now) {
+        const progress = Math.min((now - start) / duration, 1);
+        const eased = 1 - Math.pow(1 - progress, 3);
+        accent.textContent = Math.round(target * eased);
+        if (progress < 1) requestAnimationFrame(tick);
+      }
+      requestAnimationFrame(tick);
+    }
+  });
+}, { threshold: 0.5 });
+counters.forEach(c => counterObserver.observe(c));
+
+// TCO comparison table animation
+const tcoTable = document.getElementById('tcoTable');
+if (tcoTable) {
+  const tableObserver = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        tcoTable.classList.add('animated');
+        tableObserver.unobserve(tcoTable);
+      }
+    });
+  }, { threshold: 0.2 });
+  tableObserver.observe(tcoTable);
+}
 </script>
 </body>
 </html>
