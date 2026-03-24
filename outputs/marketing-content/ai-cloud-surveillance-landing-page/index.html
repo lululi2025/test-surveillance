@@ -106,10 +106,10 @@ p { font-size: 1rem; color: #444; }
   display: flex;
   justify-content: center;
   align-items: center;
-  transform: translateX(24px);
+  transform: translateX(54px) translateY(18px);
 }
 .hero-product-img {
-  max-height: 440px;
+  max-height: 560px;
   width: auto;
   filter: none;
   animation: float 6s ease-in-out infinite;
@@ -134,48 +134,55 @@ p { font-size: 1rem; color: #444; }
 
 /* ===================== SOLUTION OVERVIEW ===================== */
 .solution-section { background: #fff; }
-.solution-content { display: grid; grid-template-columns: 1fr 1fr; gap: 60px; align-items: center; margin-top: 48px; }
-.solution-text p { margin-bottom: 16px; color: #555; }
-.solution-text p:last-child { margin-bottom: 0; }
+.solution-subtitle { max-width: 640px; margin: 16px auto 0; color: #555; font-size: 1.05rem; line-height: 1.7; }
 .solution-highlight { color: #03A9F4; font-weight: 600; }
-/* Architecture Animation */
-.arch-anim {
-  background: linear-gradient(135deg, #f0f4f8 0%, #e8eef5 100%);
-  border-radius: 20px; padding: 48px; position: relative; min-height: 340px;
-  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 40px;
+/* Architecture Flow Cards */
+.arch-flow { display: flex; align-items: stretch; justify-content: center; gap: 0; margin-top: 56px; }
+.arch-card {
+  background: #fff; border: 1px solid #e8eef5; border-radius: 16px; padding: 36px 28px; text-align: center;
+  flex: 1; max-width: 300px; position: relative; transition: transform .3s, box-shadow .3s;
 }
-.arch-row { display: flex; align-items: center; gap: 24px; }
-.arch-node {
-  background: #fff; border-radius: 14px; padding: 16px 24px; box-shadow: 0 4px 16px rgba(0,0,0,.06);
-  display: flex; align-items: center; gap: 12px; font-weight: 600; font-size: .85rem; color: #1a1a2e;
-  position: relative;
+.arch-card:hover { transform: translateY(-4px); box-shadow: 0 12px 32px rgba(0,0,0,.08); }
+.arch-card-icon {
+  width: 56px; height: 56px; border-radius: 14px; display: flex; align-items: center; justify-content: center;
+  margin: 0 auto 20px;
 }
-.arch-node-icon {
-  width: 36px; height: 36px; border-radius: 8px; display: flex; align-items: center; justify-content: center;
+.arch-card-icon svg { width: 28px; height: 28px; stroke-width: 1.5; fill: none; }
+.arch-card-icon.cam { background: rgba(3,169,244,.1); }
+.arch-card-icon.cam svg { stroke: #03A9F4; }
+.arch-card-icon.cloud { background: rgba(255,162,0,.1); }
+.arch-card-icon.cloud svg { stroke: #FFA200; }
+.arch-card-icon.dash { background: rgba(76,175,80,.1); }
+.arch-card-icon.dash svg { stroke: #4CAF50; }
+.arch-card h3 { font-size: 1.05rem; color: #1a1a2e; margin-bottom: 8px; }
+.arch-card p { font-size: .88rem; color: #666; line-height: 1.6; }
+.arch-card .arch-card-tag {
+  display: inline-block; margin-top: 14px; padding: 4px 12px; border-radius: 20px;
+  font-size: .72rem; font-weight: 600; letter-spacing: .03em;
 }
-.arch-node-icon svg { width: 20px; height: 20px; }
-.arch-node-icon.cam { background: rgba(3,169,244,.1); }
-.arch-node-icon.cam svg { stroke: #03A9F4; fill: none; }
-.arch-node-icon.cloud { background: rgba(255,162,0,.1); }
-.arch-node-icon.cloud svg { stroke: #FFA200; fill: none; }
-.arch-node-icon.dash { background: rgba(76,175,80,.1); }
-.arch-node-icon.dash svg { stroke: #4CAF50; fill: none; }
-.arch-arrow {
-  display: flex; flex-direction: column; align-items: center; gap: 4px;
+.arch-card .tag-blue { background: rgba(3,169,244,.1); color: #03A9F4; }
+.arch-card .tag-orange { background: rgba(255,162,0,.1); color: #FFA200; }
+.arch-card .tag-green { background: rgba(76,175,80,.1); color: #4CAF50; }
+/* Arrow connectors between cards */
+.arch-connector {
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  padding: 0 8px; min-width: 72px;
 }
-.arch-arrow-line { width: 60px; height: 2px; background: #03A9F4; position: relative; overflow: hidden; }
-.arch-arrow-line::after {
-  content: ''; position: absolute; width: 20px; height: 100%; background: rgba(255,255,255,.8);
-  animation: arrow-flow 2s linear infinite; left: -20px;
+.arch-connector-line {
+  width: 48px; height: 2px; background: linear-gradient(90deg, #03A9F4, #FFA200);
+  position: relative; overflow: hidden; border-radius: 1px;
 }
-@keyframes arrow-flow { 0% { left: -20px; } 100% { left: 60px; } }
-.arch-arrow-label { font-size: .65rem; color: #888; font-weight: 500; white-space: nowrap; }
-.arch-status {
-  position: absolute; bottom: 16px; right: 20px; display: flex; align-items: center; gap: 6px;
-  font-size: .7rem; color: #4CAF50; font-weight: 600;
+.arch-connector-line.line2 { background: linear-gradient(90deg, #FFA200, #4CAF50); }
+.arch-connector-line::after {
+  content: ''; position: absolute; width: 16px; height: 100%; background: rgba(255,255,255,.7);
+  animation: arrow-flow 2s linear infinite; left: -16px;
 }
-.arch-status-dot { width: 6px; height: 6px; border-radius: 50%; background: #4CAF50; animation: blink 2s infinite; }
-@keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: .3; } }
+@keyframes arrow-flow { 0% { left: -16px; } 100% { left: 48px; } }
+.arch-connector-label { font-size: .68rem; color: #999; font-weight: 500; margin-top: 6px; white-space: nowrap; }
+/* Bottom tagline */
+.solution-bottom {
+  text-align: center; margin-top: 40px; color: #888; font-size: .9rem; font-style: italic;
+}
 
 /* ===================== FEATURES ===================== */
 .features-section { background: #f8f9fb; }
@@ -746,9 +753,14 @@ p { font-size: 1rem; color: #444; }
   .hero-buttons { justify-content: center; }
   .hero-products { margin-top: 40px; }
   .hero-products { transform: none; }
-  .hero-product-img { max-height: 300px; }
+  .hero-product-img { max-height: 360px; }
   .feature-block, .feature-block.reverse { grid-template-columns: 1fr; direction: ltr; }
-  .solution-content { grid-template-columns: 1fr; }
+  .arch-flow { flex-direction: column; align-items: center; }
+  .arch-card { max-width: 100%; }
+  .arch-connector { padding: 12px 0; min-width: unset; }
+  .arch-connector-line, .arch-connector-line.line2 { width: 2px; height: 40px; }
+  .arch-connector-label { margin-top: 0; margin-left: 12px; }
+  .arch-connector { flex-direction: row; }
   .products-grid { grid-template-columns: repeat(2, 1fr); }
   .tco-grid { grid-template-columns: 1fr; }
   .usecases-grid { grid-template-columns: repeat(2, 1fr); }
@@ -763,9 +775,6 @@ p { font-size: 1rem; color: #444; }
   .usecases-grid { grid-template-columns: 1fr; }
   .form-grid { grid-template-columns: 1fr; }
   .facerec-anim { grid-template-columns: 1fr; }
-  .arch-row { flex-direction: column; }
-  .arch-arrow-line { width: 2px; height: 40px; }
-  .arch-arrow { flex-direction: row; }
 }
 </style>
 </head>
@@ -806,7 +815,7 @@ p { font-size: 1rem; color: #444; }
       </div>
     </div>
     <div class="hero-products">
-      <img src="assets/images/ECC100_S1_clean.png" alt="EnGenius AI Camera ECC100" class="hero-product-img">
+      <img src="assets/images/ECC100_S6_clean_match.png" alt="EnGenius AI Camera ECC100" class="hero-product-img">
     </div>
   </div>
 </section>
@@ -848,44 +857,48 @@ p { font-size: 1rem; color: #444; }
   <div class="container">
     <div class="text-center reveal">
       <h2>One Cloud Platform. Complete AI Surveillance.</h2>
+      <p class="solution-subtitle">Edge AI cameras that <span class="solution-highlight">think on-device</span>, store locally, and report to a unified cloud dashboard — no NVR, no forced subscriptions.</p>
     </div>
-    <div class="solution-content">
-      <div class="solution-text reveal">
-        <p>EnGenius AI Cloud Surveillance combines <span class="solution-highlight">edge AI processing</span>, built-in storage, and unified cloud management into a single ecosystem.</p>
-        <p>Every camera runs a dedicated Neural Processing Unit that analyzes video on-device — detecting people, vehicles, and objects in real time. Only lightweight metadata travels to the cloud, keeping bandwidth low and privacy intact.</p>
-        <p>No NVR servers. No forced subscriptions. Just intelligent cameras that work — even when the internet doesn't.</p>
-      </div>
-      <div class="arch-anim reveal">
-        <div class="arch-row">
-          <div class="arch-node">
-            <div class="arch-node-icon cam">
-              <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
-            </div>
-            Edge AI Camera
-          </div>
-          <div class="arch-arrow">
-            <div class="arch-arrow-line"></div>
-            <div class="arch-arrow-label">Metadata only</div>
-          </div>
-          <div class="arch-node">
-            <div class="arch-node-icon cloud">
-              <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"><path d="M18 10h-1.26A8 8 0 1 0 9 20h9a5 5 0 0 0 0-10z"/></svg>
-            </div>
-            EnGenius Cloud
-          </div>
-          <div class="arch-arrow">
-            <div class="arch-arrow-line"></div>
-            <div class="arch-arrow-label">Real-time alerts</div>
-          </div>
-          <div class="arch-node">
-            <div class="arch-node-icon dash">
-              <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
-            </div>
-            Dashboard
-          </div>
+    <div class="arch-flow reveal">
+      <!-- Card 1: Edge AI Camera -->
+      <div class="arch-card">
+        <div class="arch-card-icon cam">
+          <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
         </div>
-        <div class="arch-status"><span class="arch-status-dot"></span> All systems online</div>
+        <h3>Edge AI Camera</h3>
+        <p>Built-in NPU detects people, vehicles &amp; objects in real time — all processing stays on-device.</p>
+        <span class="arch-card-tag tag-blue">On-device AI</span>
       </div>
+      <!-- Arrow 1 -->
+      <div class="arch-connector">
+        <div class="arch-connector-line"></div>
+        <div class="arch-connector-label">Metadata only</div>
+      </div>
+      <!-- Card 2: EnGenius Cloud -->
+      <div class="arch-card">
+        <div class="arch-card-icon cloud">
+          <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M18 10h-1.26A8 8 0 1 0 9 20h9a5 5 0 0 0 0-10z"/></svg>
+        </div>
+        <h3>EnGenius Cloud</h3>
+        <p>Lightweight metadata syncs to the cloud — low bandwidth, real-time alerts, zero video upload.</p>
+        <span class="arch-card-tag tag-orange">Zero mandatory fees</span>
+      </div>
+      <!-- Arrow 2 -->
+      <div class="arch-connector">
+        <div class="arch-connector-line line2"></div>
+        <div class="arch-connector-label">Real-time alerts</div>
+      </div>
+      <!-- Card 3: Dashboard -->
+      <div class="arch-card">
+        <div class="arch-card-icon dash">
+          <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+        </div>
+        <h3>Unified Dashboard</h3>
+        <p>Manage cameras, switches, gateways &amp; PDUs from one cloud console — across every site.</p>
+        <span class="arch-card-tag tag-green">Multi-site ready</span>
+      </div>
+    </div>
+    <p class="solution-bottom reveal">No NVR servers · No cloud round-trips · Works offline</p>
     </div>
   </div>
 </section>
