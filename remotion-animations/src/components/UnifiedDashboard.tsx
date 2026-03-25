@@ -1,568 +1,537 @@
 import React from "react";
 import {
   AbsoluteFill,
-  useCurrentFrame,
-  useVideoConfig,
   interpolate,
   spring,
+  useCurrentFrame,
+  useVideoConfig,
 } from "remotion";
 import { COLORS, FONT } from "../theme";
-import { CameraIcon, GatewayIcon, SwitchIcon } from "./SvgIcons";
+import { AlertBellIcon, CameraIcon, GatewayIcon, SwitchIcon } from "./SvgIcons";
 
-// Camera feed card
-const CameraFeed: React.FC<{
-  name: string;
-  index: number;
-  frame: number;
-}> = ({ name, index, frame }) => (
-  <div
-    style={{
-      background: `linear-gradient(135deg, #1e2d3d, #15202b)`,
-      borderRadius: 10,
-      border: "1px solid rgba(255,255,255,0.1)",
-      padding: 12,
-      position: "relative",
-      aspectRatio: "16/9",
-      display: "flex",
-      alignItems: "flex-end",
-      overflow: "hidden",
-    }}
-  >
-    {/* Subtle scene content */}
+const enter = (progress: number, y = 18) => ({
+  opacity: progress,
+  transform: `translateY(${interpolate(progress, [0, 1], [y, 0])}px)`,
+});
+
+const whiteCard: React.CSSProperties = {
+  background: "#FFFFFF",
+  border: "1px solid rgba(13,27,42,0.08)",
+  borderRadius: 28,
+  boxShadow: "0 24px 60px rgba(13,27,42,0.08)",
+};
+
+const TitleBlock: React.FC<{ kicker: string; title: string }> = ({ kicker, title }) => (
+  <div>
     <div
       style={{
-        position: "absolute",
-        inset: 0,
-        background: `linear-gradient(${135 + index * 30}deg, rgba(255,255,255,0.02) 0%, rgba(255,255,255,0.005) 100%)`,
-      }}
-    />
-    {/* Camera icon watermark */}
-    <div
-      style={{
-        position: "absolute",
-        top: "50%",
-        left: "50%",
-        transform: "translate(-50%, -50%)",
-        opacity: 0.08,
+        color: COLORS.brandBlue,
+        fontSize: 12,
+        fontWeight: 800,
+        letterSpacing: 1.8,
+        textTransform: "uppercase",
+        marginBottom: 10,
       }}
     >
-      <CameraIcon size={60} color={COLORS.white} />
-    </div>
-    {/* LIVE indicator */}
-    <div
-      style={{
-        position: "absolute",
-        top: 8,
-        left: 10,
-        display: "flex",
-        alignItems: "center",
-        gap: 5,
-        background: "rgba(0,0,0,0.5)",
-        padding: "3px 8px",
-        borderRadius: 4,
-      }}
-    >
-      <div
-        style={{
-          width: 6,
-          height: 6,
-          borderRadius: "50%",
-          background: COLORS.alertRed,
-          opacity: Math.sin(frame * 0.3 + index) > 0 ? 1 : 0.3,
-        }}
-      />
-      <span
-        style={{
-          fontSize: 9,
-          color: COLORS.white,
-          fontWeight: 700,
-          letterSpacing: 1,
-        }}
-      >
-        LIVE
-      </span>
-    </div>
-    {/* Time overlay */}
-    <div
-      style={{
-        position: "absolute",
-        top: 8,
-        right: 10,
-        fontSize: 9,
-        fontFamily: "monospace",
-        color: COLORS.textMuted,
-        background: "rgba(0,0,0,0.5)",
-        padding: "3px 6px",
-        borderRadius: 4,
-      }}
-    >
-      14:23:0{index}
+      {kicker}
     </div>
     <div
       style={{
-        fontSize: 10,
-        color: COLORS.textSecondary,
-        fontWeight: 600,
-        zIndex: 1,
+        color: "#102033",
+        fontSize: 30,
+        fontWeight: 800,
+        lineHeight: 1.1,
+        maxWidth: 700,
       }}
     >
-      {name}
+      {title}
     </div>
   </div>
 );
 
-// Network device node
-const NetworkNode: React.FC<{
-  x: number;
-  y: number;
-  icon: React.ReactNode;
+const Chip: React.FC<{
   label: string;
   color: string;
-}> = ({ x, y, icon, label, color }) => (
+}> = ({ label, color }) => (
   <div
     style={{
-      position: "absolute",
-      left: x,
-      top: y,
+      padding: "10px 16px",
+      borderRadius: 999,
+      background: color,
+      color: "#102033",
+      fontSize: 14,
+      fontWeight: 700,
+      border: "1px solid rgba(13,27,42,0.08)",
+    }}
+  >
+    {label}
+  </div>
+);
+
+const SceneCard: React.FC<{
+  label: string;
+  title: string;
+  accent: string;
+}> = ({ label, title, accent }) => (
+  <div
+    style={{
+      ...whiteCard,
+      padding: 24,
       display: "flex",
       flexDirection: "column",
-      alignItems: "center",
-      gap: 6,
+      justifyContent: "center",
+      minHeight: 220,
     }}
   >
     <div
       style={{
-        width: 50,
-        height: 50,
-        borderRadius: 12,
-        background: `${color}12`,
-        border: `1px solid ${color}30`,
+        color: "rgba(16,32,51,0.5)",
+        fontSize: 11,
+        fontWeight: 800,
+        textTransform: "uppercase",
+        letterSpacing: 1.4,
+        marginBottom: 12,
+      }}
+    >
+      {label}
+    </div>
+    <div
+      style={{
+        color: accent,
+        fontSize: 30,
+        fontWeight: 800,
+        lineHeight: 1.12,
+      }}
+    >
+      {title}
+    </div>
+  </div>
+);
+
+const PlatformGraphic: React.FC<{ progress: number }> = ({ progress }) => {
+  const scale = interpolate(progress, [0, 1], [0.92, 1]);
+
+  return (
+    <div
+      style={{
+        ...whiteCard,
+        height: "100%",
+        padding: 28,
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        transform: `scale(${scale})`,
+      }}
+    >
+      <div
+        style={{
+          position: "relative",
+          width: 640,
+          height: 360,
+        }}
+      >
+        <svg
+          width="640"
+          height="360"
+          viewBox="0 0 640 360"
+          style={{ position: "absolute", inset: 0 }}
+        >
+          <line x1="320" y1="170" x2="150" y2="90" stroke={COLORS.brandBlue} strokeWidth="4" opacity="0.22" />
+          <line x1="320" y1="170" x2="490" y2="90" stroke={COLORS.brandBlue} strokeWidth="4" opacity="0.22" />
+          <line x1="320" y1="170" x2="180" y2="280" stroke={COLORS.brandBlue} strokeWidth="4" opacity="0.22" />
+          <line x1="320" y1="170" x2="460" y2="280" stroke={COLORS.brandBlue} strokeWidth="4" opacity="0.22" />
+        </svg>
+
+        <div
+          style={{
+            position: "absolute",
+            left: 246,
+            top: 110,
+            width: 148,
+            height: 116,
+            borderRadius: 28,
+            background: "linear-gradient(180deg, #E8F6FF 0%, #F7FBFF 100%)",
+            border: "1px solid rgba(3,169,244,0.14)",
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+            justifyContent: "center",
+            boxShadow: "0 14px 28px rgba(3,169,244,0.10)",
+          }}
+        >
+          <div
+            style={{
+              width: 56,
+              height: 56,
+              borderRadius: 20,
+              background: "rgba(3,169,244,0.12)",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              marginBottom: 10,
+            }}
+          >
+            <GatewayIcon size={34} color={COLORS.brandBlue} />
+          </div>
+          <div style={{ color: "#102033", fontSize: 14, fontWeight: 800 }}>Cloud</div>
+        </div>
+
+        {[
+          {
+            left: 88,
+            top: 46,
+            icon: <CameraIcon size={30} color={COLORS.successGreen} />,
+            label: "Cameras",
+            bg: "rgba(76,175,80,0.10)",
+          },
+          {
+            left: 450,
+            top: 46,
+            icon: (
+              <div style={{ color: COLORS.successGreen, fontSize: 18, fontWeight: 800 }}>AP</div>
+            ),
+            label: "Wi-Fi",
+            bg: "rgba(76,175,80,0.10)",
+          },
+          {
+            left: 112,
+            top: 238,
+            icon: <SwitchIcon size={30} color={COLORS.brandBlue} />,
+            label: "Switching",
+            bg: "rgba(3,169,244,0.10)",
+          },
+          {
+            left: 432,
+            top: 238,
+            icon: <GatewayIcon size={30} color={COLORS.actionOrange} />,
+            label: "Gateway",
+            bg: "rgba(255,162,0,0.12)",
+          },
+        ].map((item) => (
+          <div
+            key={item.label}
+            style={{
+              position: "absolute",
+              left: item.left,
+              top: item.top,
+              width: 120,
+              height: 84,
+              borderRadius: 24,
+              background: "#FFFFFF",
+              border: "1px solid rgba(13,27,42,0.08)",
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+              justifyContent: "center",
+              gap: 8,
+              boxShadow: "0 12px 24px rgba(13,27,42,0.06)",
+            }}
+          >
+            <div
+              style={{
+                width: 44,
+                height: 44,
+                borderRadius: 16,
+                background: item.bg,
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+              }}
+            >
+              {item.icon}
+            </div>
+            <div style={{ color: "#102033", fontSize: 12, fontWeight: 700 }}>{item.label}</div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+};
+
+const TraceGraphic: React.FC<{ progress: number; recovered: boolean }> = ({
+  progress,
+  recovered,
+}) => {
+  const accent = recovered ? COLORS.successGreen : COLORS.actionOrange;
+  const pulseX = interpolate(progress, [0, 1], [320, 504]);
+  const pulseY = interpolate(progress, [0, 1], [160, 138]);
+
+  return (
+    <div
+      style={{
+        ...whiteCard,
+        height: "100%",
+        padding: 28,
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
       }}
     >
-      {icon}
-    </div>
-    <span
-      style={{
-        fontSize: 9,
-        color: COLORS.textSecondary,
-        fontWeight: 600,
-        textAlign: "center",
-        maxWidth: 75,
-      }}
-    >
-      {label}
-    </span>
-  </div>
-);
+      <div style={{ position: "relative", width: 640, height: 360 }}>
+        <svg
+          width="640"
+          height="360"
+          viewBox="0 0 640 360"
+          style={{ position: "absolute", inset: 0 }}
+        >
+          <line x1="148" y1="184" x2="320" y2="160" stroke="rgba(16,32,51,0.12)" strokeWidth="6" strokeLinecap="round" />
+          <line x1="320" y1="160" x2="504" y2="138" stroke={accent} strokeWidth="6" strokeLinecap="round" />
+          <line x1="504" y1="138" x2="544" y2="230" stroke={accent} strokeWidth="6" strokeLinecap="round" opacity="0.65" />
+          <circle cx={pulseX} cy={pulseY} r="10" fill={accent} />
+        </svg>
 
-// PDU outlet
-const PDUOutlet: React.FC<{
-  index: number;
-  watts: number;
-  active: boolean;
-}> = ({ index, watts, active }) => (
-  <div
-    style={{
-      background: active ? `${COLORS.successGreen}0A` : "rgba(255,255,255,0.03)",
-      borderRadius: 10,
-      padding: "12px 8px",
-      border: `1px solid ${active ? COLORS.successGreen + "25" : "rgba(255,255,255,0.05)"}`,
-      textAlign: "center",
-    }}
-  >
-    <div
-      style={{ fontSize: 9, color: COLORS.textMuted, marginBottom: 6 }}
-    >
-      Port {index + 1}
-    </div>
-    <div
-      style={{
-        fontSize: 16,
-        fontWeight: 700,
-        color: active ? COLORS.successGreen : COLORS.textMuted,
-      }}
-    >
-      {active ? `${watts}W` : "—"}
-    </div>
-    <div
-      style={{
-        width: 6,
-        height: 6,
-        borderRadius: "50%",
-        background: active ? COLORS.successGreen : "rgba(255,255,255,0.12)",
-        boxShadow: active ? `0 0 6px ${COLORS.successGreen}60` : "none",
-        margin: "8px auto 0",
-      }}
-    />
-  </div>
-);
-
-export const UnifiedDashboard: React.FC = () => {
-  const frame = useCurrentFrame();
-  const { fps, durationInFrames } = useVideoConfig();
-  const phase = frame % durationInFrames;
-
-  const tabIndex = phase < 80 ? 0 : phase < 160 ? 1 : 2;
-
-  const tabTransition = (targetTab: number) => {
-    const startFrame = targetTab * 80;
-    return interpolate(phase, [startFrame, startFrame + 12], [0, 1], {
-      extrapolateLeft: "clamp",
-      extrapolateRight: "clamp",
-    });
-  };
-
-  // First tab starts fully visible
-  const tab0Opacity = tabIndex === 0 ? 1 : 0;
-
-  const tabs = ["Live Cameras", "Network Topology", "Smart PDU"];
-
-  // Alert notification
-  const alertFrame = 50;
-  const alertVisible = phase > alertFrame && phase < 75;
-  const alertSpring = spring({
-    frame: Math.max(0, phase - alertFrame),
-    fps,
-    config: { damping: 14, stiffness: 100 },
-  });
-
-  return (
-    <AbsoluteFill
-      style={{
-        background: `linear-gradient(135deg, ${COLORS.darkBg} 0%, ${COLORS.darkNavy} 100%)`,
-        fontFamily: FONT,
-        overflow: "hidden",
-        padding: "20px 28px",
-        display: "flex",
-        flexDirection: "column" as const,
-      }}
-    >
-      {/* Dashboard header */}
-      <div
-        style={{
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "center",
-          marginBottom: 16,
-        }}
-      >
-        <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-          <div
-            style={{
-              width: 30,
-              height: 30,
-              borderRadius: 8,
-              background: `${COLORS.brandBlue}18`,
-              border: `1px solid ${COLORS.brandBlue}25`,
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-            }}
-          >
-            <svg width="16" height="16" viewBox="0 0 40 40" fill="none">
-              <path
-                d="M10 28 Q4 28 4 22 Q4 16 10 16 Q10 8 20 8 Q28 8 30 14 Q36 14 36 20 Q36 28 30 28 Z"
-                fill={`${COLORS.brandBlue}40`}
-                stroke={COLORS.brandBlue}
-                strokeWidth="2"
-              />
-            </svg>
-          </div>
-          <span
-            style={{ fontSize: 15, fontWeight: 700, color: COLORS.textPrimary }}
-          >
-            EnGenius Cloud
-          </span>
-          <span
-            style={{ fontSize: 11, color: COLORS.textMuted, marginLeft: 4 }}
-          >
-            Dashboard
-          </span>
-        </div>
-        <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
-          <div
-            style={{
-              width: 8,
-              height: 8,
-              borderRadius: "50%",
-              background: COLORS.successGreen,
-              boxShadow: `0 0 6px ${COLORS.successGreen}60`,
-            }}
-          />
-          <span
-            style={{ fontSize: 11, color: COLORS.successGreen, fontWeight: 500 }}
-          >
-            All Systems Online
-          </span>
-        </div>
-      </div>
-
-      {/* Tab bar */}
-      <div
-        style={{
-          display: "flex",
-          gap: 4,
-          marginBottom: 18,
-          background: "rgba(0,0,0,0.3)",
-          borderRadius: 10,
-          padding: 3,
-        }}
-      >
-        {tabs.map((tab, i) => (
-          <div
-            key={tab}
-            style={{
-              flex: 1,
-              textAlign: "center",
-              padding: "10px 0",
-              fontSize: 12,
-              fontWeight: tabIndex === i ? 700 : 500,
-              color: tabIndex === i ? COLORS.white : COLORS.textMuted,
-              background: tabIndex === i ? COLORS.brandBlue : "transparent",
-              borderRadius: 8,
-              letterSpacing: 0.3,
-            }}
-          >
-            {tab}
-          </div>
-        ))}
-      </div>
-
-      {/* Content panels */}
-      <div
-        style={{
-          flex: 1,
-          background: "rgba(0,0,0,0.2)",
-          borderRadius: 16,
-          border: "1px solid rgba(255,255,255,0.05)",
-          padding: 16,
-          overflow: "hidden",
-          position: "relative",
-        }}
-      >
-        {/* Tab 0: Live Cameras */}
-        {tabIndex === 0 && (
-          <div
-            style={{
-              display: "grid",
-              gridTemplateColumns: "1fr 1fr",
-              gap: 10,
-              opacity: phase < 80 ? 1 : 0,
-            }}
-          >
-            <CameraFeed name="Lobby — ECC500" index={0} frame={frame} />
-            <CameraFeed name="Entrance — ECC120" index={1} frame={frame} />
-            <CameraFeed name="Parking — ECC100" index={2} frame={frame} />
-            <CameraFeed name="Warehouse — ECC500" index={3} frame={frame} />
-          </div>
-        )}
-
-        {/* Tab 1: Network Topology */}
-        {tabIndex === 1 && (
-          <div
-            style={{
-              position: "relative",
-              width: "100%",
-              height: "100%",
-              opacity: tabTransition(1),
-            }}
-          >
-            {/* Connection lines */}
-            <svg
-              style={{ position: "absolute", top: 0, left: 0, width: "100%", height: "100%" }}
-            >
-              {/* Animated data flow dots */}
-              {[0, 1].map((lineIdx) => {
-                const dotProgress = ((frame * 2 + lineIdx * 40) % 60) / 60;
-                const startX = 435;
-                const startY = 65;
-                const endX = lineIdx === 0 ? 230 : 640;
-                const endY = 180;
-                const dx = interpolate(dotProgress, [0, 1], [startX, endX]);
-                const dy = interpolate(dotProgress, [0, 1], [startY, endY]);
-                return (
-                  <circle
-                    key={lineIdx}
-                    cx={dx}
-                    cy={dy}
-                    r={3}
-                    fill={COLORS.brandBlue}
-                    opacity={0.6}
-                  />
-                );
-              })}
-              {/* Router to switches */}
-              <line x1={435} y1={65} x2={230} y2={180} stroke={COLORS.brandBlue} strokeWidth={1.5} opacity={0.25} />
-              <line x1={435} y1={65} x2={640} y2={180} stroke={COLORS.brandBlue} strokeWidth={1.5} opacity={0.25} />
-              {/* Switches to cameras */}
-              <line x1={230} y1={225} x2={100} y2={320} stroke={COLORS.successGreen} strokeWidth={1} opacity={0.2} />
-              <line x1={230} y1={225} x2={310} y2={320} stroke={COLORS.successGreen} strokeWidth={1} opacity={0.2} />
-              <line x1={640} y1={225} x2={560} y2={320} stroke={COLORS.successGreen} strokeWidth={1} opacity={0.2} />
-              <line x1={640} y1={225} x2={740} y2={320} stroke={COLORS.successGreen} strokeWidth={1} opacity={0.2} />
-            </svg>
-
-            <NetworkNode x={410} y={20} icon={<GatewayIcon size={32} color={COLORS.brandBlue} />} label="Security Gateway" color={COLORS.brandBlue} />
-            <NetworkNode x={205} y={160} icon={<SwitchIcon size={32} color={COLORS.brandBlue} />} label="Switch Floor 1" color={COLORS.brandBlue} />
-            <NetworkNode x={615} y={160} icon={<SwitchIcon size={32} color={COLORS.brandBlue} />} label="Switch Floor 2" color={COLORS.brandBlue} />
-            <NetworkNode x={75} y={300} icon={<CameraIcon size={28} color={COLORS.successGreen} />} label="ECC500" color={COLORS.successGreen} />
-            <NetworkNode x={285} y={300} icon={<CameraIcon size={28} color={COLORS.successGreen} />} label="ECC120" color={COLORS.successGreen} />
-            <NetworkNode x={535} y={300} icon={<CameraIcon size={28} color={COLORS.successGreen} />} label="ECC100" color={COLORS.successGreen} />
-            <NetworkNode x={715} y={300} icon={<CameraIcon size={28} color={COLORS.successGreen} />} label="ECC500" color={COLORS.successGreen} />
-          </div>
-        )}
-
-        {/* Tab 2: Smart PDU */}
-        {tabIndex === 2 && (
-          <div style={{ opacity: tabTransition(2) }}>
-            <div
-              style={{
-                display: "flex",
-                justifyContent: "space-between",
-                alignItems: "center",
-                marginBottom: 18,
-              }}
-            >
-              <span
-                style={{ fontSize: 13, fontWeight: 600, color: COLORS.textPrimary }}
-              >
-                PDU-01 — Server Room
-              </span>
-              <div style={{ display: "flex", gap: 20 }}>
-                <div style={{ textAlign: "center" }}>
-                  <div
-                    style={{
-                      fontSize: 22,
-                      fontWeight: 700,
-                      color: COLORS.brandBlue,
-                    }}
-                  >
-                    847W
-                  </div>
-                  <div
-                    style={{
-                      fontSize: 9,
-                      color: COLORS.textMuted,
-                      textTransform: "uppercase",
-                      letterSpacing: 1.5,
-                    }}
-                  >
-                    Total Power
-                  </div>
-                </div>
-                <div style={{ textAlign: "center" }}>
-                  <div
-                    style={{
-                      fontSize: 22,
-                      fontWeight: 700,
-                      color: COLORS.successGreen,
-                    }}
-                  >
-                    6/8
-                  </div>
-                  <div
-                    style={{
-                      fontSize: 9,
-                      color: COLORS.textMuted,
-                      textTransform: "uppercase",
-                      letterSpacing: 1.5,
-                    }}
-                  >
-                    Active Ports
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div
-              style={{
-                display: "grid",
-                gridTemplateColumns: "repeat(4, 1fr)",
-                gap: 10,
-              }}
-            >
-              <PDUOutlet index={0} watts={125} active />
-              <PDUOutlet index={1} watts={230} active />
-              <PDUOutlet index={2} watts={85} active />
-              <PDUOutlet index={3} watts={0} active={false} />
-              <PDUOutlet index={4} watts={180} active />
-              <PDUOutlet index={5} watts={92} active />
-              <PDUOutlet index={6} watts={135} active />
-              <PDUOutlet index={7} watts={0} active={false} />
-            </div>
-          </div>
-        )}
-      </div>
-
-      {/* Tab indicator dots */}
-      <div
-        style={{
-          display: "flex",
-          justifyContent: "center",
-          gap: 8,
-          marginTop: 14,
-        }}
-      >
-        {[0, 1, 2].map((i) => (
-          <div
-            key={i}
-            style={{
-              width: tabIndex === i ? 22 : 8,
-              height: 8,
-              borderRadius: 4,
-              background:
-                tabIndex === i ? COLORS.brandBlue : "rgba(255,255,255,0.12)",
-            }}
-          />
-        ))}
-      </div>
-
-      {/* Alert toast */}
-      {alertVisible && (
         <div
           style={{
             position: "absolute",
-            top: 24,
-            right: 24,
-            background: "rgba(0,0,0,0.88)",
-            borderRadius: 12,
-            padding: "11px 18px",
-            border: `1px solid ${COLORS.successGreen}35`,
-            boxShadow: `0 4px 24px rgba(0,0,0,0.5)`,
+            left: 96,
+            top: 136,
+            width: 104,
+            height: 96,
+            borderRadius: 24,
+            background: "#FFFFFF",
+            border: `2px solid ${recovered ? "rgba(76,175,80,0.28)" : "rgba(234,61,86,0.32)"}`,
             display: "flex",
+            flexDirection: "column",
             alignItems: "center",
-            gap: 10,
-            transform: `translateX(${interpolate(alertSpring, [0, 1], [320, 0])}px)`,
+            justifyContent: "center",
+            gap: 8,
+            boxShadow: "0 12px 24px rgba(13,27,42,0.06)",
+          }}
+        >
+          <CameraIcon size={34} color={recovered ? COLORS.successGreen : COLORS.alertRed} />
+          <div style={{ color: "#102033", fontSize: 12, fontWeight: 700 }}>Camera</div>
+        </div>
+
+        <div
+          style={{
+            position: "absolute",
+            left: 270,
+            top: 110,
+            width: 108,
+            height: 96,
+            borderRadius: 24,
+            background: "#FFFFFF",
+            border: "1px solid rgba(13,27,42,0.08)",
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+            justifyContent: "center",
+            gap: 8,
+            boxShadow: "0 12px 24px rgba(13,27,42,0.06)",
+          }}
+        >
+          <SwitchIcon size={34} color={COLORS.brandBlue} />
+          <div style={{ color: "#102033", fontSize: 12, fontWeight: 700 }}>Switch</div>
+        </div>
+
+        <div
+          style={{
+            position: "absolute",
+            left: 454,
+            top: 86,
+            width: 116,
+            height: 104,
+            borderRadius: 24,
+            background: "#FFFFFF",
+            border: `2px solid ${recovered ? "rgba(76,175,80,0.24)" : "rgba(255,162,0,0.28)"}`,
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+            justifyContent: "center",
+            gap: 8,
+            boxShadow: "0 12px 24px rgba(13,27,42,0.06)",
           }}
         >
           <div
             style={{
-              width: 22,
-              height: 22,
-              borderRadius: "50%",
-              background: `${COLORS.successGreen}18`,
+              width: 46,
+              height: 46,
+              borderRadius: 18,
+              background: recovered ? "rgba(76,175,80,0.12)" : "rgba(255,162,0,0.12)",
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
             }}
           >
-            <svg width="12" height="12" viewBox="0 0 16 16" fill="none">
-              <path d="M3 8 L6.5 11.5 L13 4.5" stroke={COLORS.successGreen} strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
-            </svg>
+            <SwitchIcon size={30} color={accent} />
           </div>
-          <div>
-            <div
-              style={{ fontSize: 12, fontWeight: 600, color: COLORS.textPrimary }}
-            >
-              ECC500-Lobby reconnected
-            </div>
-            <div style={{ fontSize: 10, color: COLORS.textMuted }}>
-              Just now
-            </div>
+          <div style={{ color: "#102033", fontSize: 12, fontWeight: 700 }}>
+            Port 18
           </div>
         </div>
-      )}
+
+        {recovered ? (
+          <div
+            style={{
+              position: "absolute",
+              right: 44,
+              bottom: 64,
+              padding: "12px 18px",
+              borderRadius: 999,
+              background: "rgba(76,175,80,0.12)",
+              color: COLORS.successGreen,
+              fontSize: 14,
+              fontWeight: 800,
+            }}
+          >
+            Restored
+          </div>
+        ) : (
+          <div
+            style={{
+              position: "absolute",
+              right: 36,
+              bottom: 58,
+              padding: "12px 18px",
+              borderRadius: 999,
+              background: "rgba(255,162,0,0.12)",
+              color: COLORS.actionOrange,
+              fontSize: 14,
+              fontWeight: 800,
+            }}
+          >
+            Trace
+          </div>
+        )}
+      </div>
+    </div>
+  );
+};
+
+export const UnifiedDashboard: React.FC = () => {
+  const frame = useCurrentFrame();
+  const { fps } = useVideoConfig();
+
+  const intro = spring({
+    frame,
+    fps,
+    config: { damping: 18, stiffness: 90 },
+  });
+
+  const scene = frame < 80 ? 0 : frame < 160 ? 1 : 2;
+  const sceneStart = scene === 0 ? 0 : scene === 1 ? 80 : 160;
+  const sceneProgress = spring({
+    frame: Math.max(0, frame - sceneStart),
+    fps,
+    config: { damping: 18, stiffness: 100 },
+  });
+
+  const cardCopy =
+    scene === 0
+      ? {
+          label: "One Platform",
+          title: "Cameras. Network. Power.",
+          accent: COLORS.brandBlue,
+        }
+      : scene === 1
+        ? {
+            label: "Find the Issue",
+            title: "Switch Floor 2 · Port 18",
+            accent: COLORS.actionOrange,
+          }
+        : {
+            label: "Recover Remotely",
+            title: "Back Online in 14 Seconds",
+            accent: COLORS.successGreen,
+          };
+
+  return (
+    <AbsoluteFill
+      style={{
+        background: "linear-gradient(180deg, #F7FBFF 0%, #FFFFFF 100%)",
+        fontFamily: FONT,
+        overflow: "hidden",
+        padding: "28px 30px",
+      }}
+    >
+      <div
+        style={{
+          position: "absolute",
+          inset: 0,
+          background:
+            "radial-gradient(circle at 10% 10%, rgba(3,169,244,0.10), transparent 22%), radial-gradient(circle at 90% 16%, rgba(255,162,0,0.08), transparent 18%)",
+        }}
+      />
+
+      <div
+        style={{
+          position: "relative",
+          zIndex: 1,
+          display: "flex",
+          flexDirection: "column",
+          height: "100%",
+          ...enter(intro, 20),
+        }}
+      >
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "flex-start",
+            marginBottom: 20,
+          }}
+        >
+          <TitleBlock
+            kicker="EnGenius Cloud"
+            title="Cameras, Network, Power. One Login."
+          />
+          <div style={{ display: "flex", gap: 10 }}>
+            <Chip label="Cloud" color="rgba(3,169,244,0.10)" />
+            <Chip label={scene === 2 ? "Recovered" : scene === 1 ? "Tracing" : "Online"} color={scene === 2 ? "rgba(76,175,80,0.12)" : scene === 1 ? "rgba(255,162,0,0.12)" : "rgba(3,169,244,0.10)"} />
+          </div>
+        </div>
+
+        <div
+          style={{
+            display: "grid",
+            gridTemplateColumns: "1.9fr 0.82fr",
+            gap: 18,
+            flex: 1,
+          }}
+        >
+          <div style={enter(sceneProgress)}>
+            {scene === 0 ? (
+              <PlatformGraphic progress={sceneProgress} />
+            ) : scene === 1 ? (
+              <TraceGraphic progress={sceneProgress} recovered={false} />
+            ) : (
+              <TraceGraphic progress={sceneProgress} recovered />
+            )}
+          </div>
+
+          <div style={enter(sceneProgress, 22)}>
+            <SceneCard
+              label={cardCopy.label}
+              title={cardCopy.title}
+              accent={cardCopy.accent}
+            />
+          </div>
+        </div>
+      </div>
+
+      {scene === 1 ? (
+        <div
+          style={{
+            position: "absolute",
+            top: 112,
+            right: 34,
+            padding: "14px 18px",
+            borderRadius: 20,
+            background: "#FFFFFF",
+            border: "1px solid rgba(234,61,86,0.16)",
+            boxShadow: "0 14px 30px rgba(13,27,42,0.08)",
+            display: "flex",
+            alignItems: "center",
+            gap: 10,
+            ...enter(sceneProgress, 14),
+          }}
+        >
+          <AlertBellIcon size={18} color={COLORS.alertRed} />
+          <div style={{ color: "#102033", fontSize: 12, fontWeight: 800 }}>
+            Camera Offline
+          </div>
+        </div>
+      ) : null}
     </AbsoluteFill>
   );
 };
