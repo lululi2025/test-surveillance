@@ -1,341 +1,195 @@
 import React from "react";
 import {
   AbsoluteFill,
-  useCurrentFrame,
-  useVideoConfig,
   interpolate,
   spring,
+  useCurrentFrame,
+  useVideoConfig,
 } from "remotion";
 import { COLORS, FONT } from "../theme";
-import { PersonSilhouette, AlertBellIcon } from "./SvgIcons";
+import { AlertBellIcon, PersonSilhouette } from "./SvgIcons";
+import { CaptionLine, IconTile, PulseRing, StageCard, glassPanelStyle } from "./AppleSimpleMotion";
+
+const SCENE_FRAMES = 80;
+
+const ZonePreview: React.FC<{
+  progress: number;
+  mode: "build" | "breach" | "alert";
+}> = ({ progress, mode }) => {
+  const personX = interpolate(progress, [0, 1], [128, 286]);
+  const inZone = mode !== "build" && progress > 0.55;
+
+  return (
+    <div
+      style={{
+        ...glassPanelStyle,
+        position: "absolute",
+        right: 58,
+        top: 88,
+        width: 360,
+        height: 258,
+        borderRadius: 28,
+        overflow: "hidden",
+        background: "linear-gradient(180deg, rgba(251,253,255,0.98) 0%, rgba(245,249,253,0.98) 100%)",
+      }}
+    >
+      <div
+        style={{
+          position: "absolute",
+          right: 26,
+          top: 36,
+          width: 134,
+          height: 112,
+          borderRadius: 18,
+          border: `2px dashed ${mode === "alert" ? COLORS.successGreen : inZone ? COLORS.alertRed : COLORS.actionOrange}`,
+          background:
+            mode === "alert"
+              ? "rgba(76,175,80,0.08)"
+              : inZone
+                ? "rgba(234,61,86,0.08)"
+                : "rgba(255,162,0,0.05)",
+        }}
+      />
+      <div
+        style={{
+          position: "absolute",
+          left: personX,
+          top: 170,
+          transform: "translate(-50%, -50%)",
+        }}
+      >
+        <PersonSilhouette
+          width={38}
+          color={
+            mode === "alert"
+              ? "rgba(76,175,80,0.78)"
+              : inZone
+                ? "rgba(234,61,86,0.76)"
+                : "rgba(16,32,51,0.54)"
+          }
+          legAngle={Math.sin(progress * 10) * 10}
+        />
+        {(inZone || mode === "alert") && (
+          <div
+            style={{
+              position: "absolute",
+              left: -10,
+              top: -8,
+              width: 56,
+              height: 96,
+              borderRadius: 14,
+              border: `2px solid ${mode === "alert" ? COLORS.successGreen : COLORS.alertRed}`,
+              boxShadow: `0 0 0 8px ${mode === "alert" ? "rgba(76,175,80,0.10)" : "rgba(234,61,86,0.08)"}`,
+            }}
+          />
+        )}
+      </div>
+    </div>
+  );
+};
 
 export const CustomAlertRules: React.FC = () => {
   const frame = useCurrentFrame();
-  const { fps, durationInFrames } = useVideoConfig();
-  const phase = frame % durationInFrames;
-
-  // Intruder movement: enters from left, crosses into restricted zone
-  const intruderX = interpolate(phase, [30, 150], [-30, 520], {
-    extrapolateLeft: "clamp",
-    extrapolateRight: "clamp",
-  });
-  const intruderY = interpolate(phase, [30, 150], [380, 260], {
-    extrapolateLeft: "clamp",
-    extrapolateRight: "clamp",
-  });
-  const intruderVisible = phase > 25 && phase < 220;
-  const legAngle = Math.sin(frame * 0.35) * 15;
-
-  // Restricted zone boundary
-  const zoneX = 340;
-  const zoneY = 120;
-  const zoneW = 520;
-  const zoneH = 380;
-
-  // Has intruder crossed into zone?
-  const inZone = intruderX > zoneX;
-
-  // Zone pulse when breached
-  const zonePulse = inZone
-    ? interpolate(Math.sin(frame * 0.4), [-1, 1], [0.3, 0.8])
-    : 0.15;
-
-  // Alert notification pop
-  const alertTriggerFrame = 100;
-  const alertVisible = phase > alertTriggerFrame && phase < 220;
-  const alertSlide = spring({
-    frame: Math.max(0, phase - alertTriggerFrame),
+  const { fps } = useVideoConfig();
+  const scene = frame < SCENE_FRAMES ? 0 : frame < SCENE_FRAMES * 2 ? 1 : 2;
+  const sceneProgress = spring({
+    frame: frame - scene * SCENE_FRAMES,
     fps,
-    config: { damping: 14, stiffness: 100 },
+    config: { damping: 18, stiffness: 110 },
   });
-  const alertDismiss = interpolate(phase, [200, 220], [1, 0], {
-    extrapolateLeft: "clamp",
-    extrapolateRight: "clamp",
-  });
-
-  // Time display
-  const seconds = Math.floor(phase / fps);
-  const timeStr = `22:47:${String(seconds + 3).padStart(2, "0")}`;
-
-  // Person color transitions to red when in zone
-  const personColor = inZone
-    ? `rgba(234, 61, 86, 0.8)`
-    : "rgba(255,255,255,0.75)";
 
   return (
     <AbsoluteFill
       style={{
-        background: `linear-gradient(135deg, ${COLORS.darkBg} 0%, ${COLORS.darkNavy} 100%)`,
+        background:
+          "radial-gradient(circle at 10% 10%, rgba(3,169,244,0.08), transparent 22%), radial-gradient(circle at 86% 12%, rgba(255,162,0,0.06), transparent 18%), linear-gradient(180deg, #F7FBFF 0%, #FFFFFF 100%)",
         fontFamily: FONT,
         overflow: "hidden",
+        padding: 28,
       }}
     >
-      {/* Surveillance grid */}
-      {[...Array(8)].map((_, i) => (
-        <div
-          key={`h${i}`}
-          style={{
-            position: "absolute",
-            left: 0,
-            right: 0,
-            top: i * 80,
-            height: 1,
-            background: "rgba(255,255,255,0.03)",
-          }}
-        />
-      ))}
-
-      {/* Restricted Zone */}
-      <div
-        style={{
-          position: "absolute",
-          left: zoneX,
-          top: zoneY,
-          width: zoneW,
-          height: zoneH,
-          border: `2px dashed ${COLORS.alertRed}`,
-          borderRadius: 8,
-          background: `rgba(234, 61, 86, ${zonePulse * 0.1})`,
-        }}
-      >
-        {/* Zone label */}
-        <div
-          style={{
-            position: "absolute",
-            top: -30,
-            left: 0,
-            background: COLORS.alertRed,
-            color: "#fff",
-            fontSize: 11,
-            fontWeight: 700,
-            padding: "5px 14px",
-            borderRadius: "8px 8px 0 0",
-            letterSpacing: 1.5,
-            textTransform: "uppercase",
-            display: "flex",
-            alignItems: "center",
-            gap: 6,
-          }}
-        >
-          <span style={{ fontSize: 12 }}>⚠</span> Restricted Area
-        </div>
-
-        {/* Zone corners */}
-        {[
-          { top: -2, left: -2, borderTop: `3px solid ${COLORS.alertRed}`, borderLeft: `3px solid ${COLORS.alertRed}` },
-          { top: -2, right: -2, borderTop: `3px solid ${COLORS.alertRed}`, borderRight: `3px solid ${COLORS.alertRed}` },
-          { bottom: -2, left: -2, borderBottom: `3px solid ${COLORS.alertRed}`, borderLeft: `3px solid ${COLORS.alertRed}` },
-          { bottom: -2, right: -2, borderBottom: `3px solid ${COLORS.alertRed}`, borderRight: `3px solid ${COLORS.alertRed}` },
-        ].map((style, i) => (
-          <div
-            key={i}
-            style={{
-              position: "absolute",
-              width: 22,
-              height: 22,
-              ...style,
-            }}
-          />
-        ))}
-      </div>
-
-      {/* Intruder figure (SVG) */}
-      {intruderVisible && (
-        <div style={{ position: "absolute", left: intruderX, top: intruderY }}>
-          <PersonSilhouette width={36} color={personColor} legAngle={legAngle} />
-
-          {/* Detection box when in zone */}
-          {inZone && (
-            <div
-              style={{
-                position: "absolute",
-                top: -10,
-                left: -10,
-                width: 56,
-                height: 96,
-                border: `2px solid ${COLORS.alertRed}`,
-                borderRadius: 4,
-                boxShadow: `0 0 16px ${COLORS.alertRed}35`,
-              }}
-            >
-              {/* Corner brackets */}
-              {[
-                { top: -1, left: -1, borderTop: `3px solid ${COLORS.alertRed}`, borderLeft: `3px solid ${COLORS.alertRed}` },
-                { top: -1, right: -1, borderTop: `3px solid ${COLORS.alertRed}`, borderRight: `3px solid ${COLORS.alertRed}` },
-                { bottom: -1, left: -1, borderBottom: `3px solid ${COLORS.alertRed}`, borderLeft: `3px solid ${COLORS.alertRed}` },
-                { bottom: -1, right: -1, borderBottom: `3px solid ${COLORS.alertRed}`, borderRight: `3px solid ${COLORS.alertRed}` },
-              ].map((style, i) => (
-                <div
-                  key={i}
-                  style={{
-                    position: "absolute",
-                    width: 10,
-                    height: 10,
-                    ...style,
-                  }}
-                />
-              ))}
-            </div>
-          )}
-        </div>
-      )}
-
-      {/* Alert Notification Toast */}
-      {alertVisible && (
-        <div
-          style={{
-            position: "absolute",
-            top: 20,
-            right: 20,
-            width: 310,
-            background: "rgba(0,0,0,0.88)",
-            borderRadius: 14,
-            padding: "16px 20px",
-            border: `1px solid ${COLORS.alertRed}50`,
-            boxShadow: `0 8px 36px rgba(0,0,0,0.6), 0 0 0 1px ${COLORS.alertRed}15`,
-            backdropFilter: "blur(12px)",
-            transform: `translateX(${interpolate(alertSlide, [0, 1], [340, 0])}px)`,
-            opacity: alertDismiss,
-          }}
-        >
-          <div style={{ display: "flex", alignItems: "flex-start", gap: 14 }}>
-            <div
-              style={{
-                width: 40,
-                height: 40,
-                borderRadius: 10,
-                background: `${COLORS.alertRed}15`,
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                flexShrink: 0,
-              }}
-            >
-              <AlertBellIcon size={22} color={COLORS.alertRed} />
-            </div>
-            <div style={{ flex: 1 }}>
-              <div
-                style={{
-                  fontSize: 12,
-                  fontWeight: 700,
-                  color: COLORS.alertRed,
-                  textTransform: "uppercase",
-                  letterSpacing: 1.5,
-                }}
-              >
-                Intrusion Alert
-              </div>
-              <div
-                style={{
-                  fontSize: 13,
-                  color: COLORS.textPrimary,
-                  marginTop: 5,
-                  lineHeight: 1.5,
-                }}
-              >
-                Person detected in restricted area
-              </div>
-              <div
-                style={{
-                  fontSize: 11,
-                  color: COLORS.textMuted,
-                  marginTop: 6,
-                }}
-              >
-                CAM-01 • Warehouse B • Just now
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* HUD - bottom bar */}
-      <div
-        style={{
-          position: "absolute",
-          bottom: 16,
-          left: 20,
-          display: "flex",
-          alignItems: "center",
-          gap: 14,
-        }}
-      >
-        <div
-          style={{
-            background: "rgba(0,0,0,0.6)",
-            borderRadius: 10,
-            padding: "9px 16px",
-            backdropFilter: "blur(8px)",
-            border: "1px solid rgba(255,255,255,0.08)",
-            display: "flex",
-            alignItems: "center",
-            gap: 12,
-          }}
-        >
-          <span
-            style={{
-              fontSize: 12,
-              fontFamily: "monospace",
-              color: COLORS.textSecondary,
-            }}
-          >
-            {timeStr}
-          </span>
-          <div
-            style={{
-              width: 1,
-              height: 14,
-              background: "rgba(255,255,255,0.1)",
-            }}
-          />
-          <span
-            style={{
-              fontSize: 11,
-              color: COLORS.actionOrange,
-              fontWeight: 600,
-              letterSpacing: 0.5,
-            }}
-          >
-            After Hours
-          </span>
-        </div>
-
-        {inZone && (
-          <div
-            style={{
-              background: `${COLORS.alertRed}15`,
-              borderRadius: 10,
-              padding: "9px 16px",
-              border: `1px solid ${COLORS.alertRed}35`,
-              display: "flex",
-              alignItems: "center",
-              gap: 8,
-            }}
-          >
-            <div
-              style={{
-                width: 8,
-                height: 8,
-                borderRadius: "50%",
-                background: COLORS.alertRed,
-                boxShadow: `0 0 8px ${COLORS.alertRed}`,
-                opacity: Math.sin(frame * 0.5) > 0 ? 1 : 0.3,
-              }}
+      <StageCard>
+        {scene === 0 ? (
+          <>
+            <IconTile
+              x={88}
+              y={152}
+              icon={<PersonSilhouette width={44} color={COLORS.brandBlue} />}
+              fill="rgba(255,255,255,0.94)"
+              progress={sceneProgress}
             />
-            <span
-              style={{
-                fontSize: 12,
-                color: COLORS.alertRed,
-                fontWeight: 700,
-                textTransform: "uppercase",
-                letterSpacing: 1.5,
-              }}
-            >
-              Zone Breach
-            </span>
-          </div>
+            <IconTile
+              x={260}
+              y={152}
+              icon={<div style={{ width: 46, height: 46, borderRadius: "50%", border: `3px solid ${COLORS.actionOrange}`, position: "relative" }}><div style={{ position: "absolute", left: 21, top: 8, width: 3, height: 16, borderRadius: 3, background: COLORS.actionOrange }} /><div style={{ position: "absolute", left: 21, top: 20, width: 12, height: 3, borderRadius: 3, background: COLORS.actionOrange }} /></div>}
+              fill="rgba(255,255,255,0.94)"
+              progress={interpolate(sceneProgress, [0.16, 1], [0, 1], { extrapolateLeft: "clamp", extrapolateRight: "clamp" })}
+            />
+            <IconTile
+              x={432}
+              y={152}
+              icon={<div style={{ width: 52, height: 52, borderRadius: 18, border: `2px dashed ${COLORS.alertRed}` }} />}
+              fill="rgba(255,255,255,0.94)"
+              progress={interpolate(sceneProgress, [0.32, 1], [0, 1], { extrapolateLeft: "clamp", extrapolateRight: "clamp" })}
+            />
+            <IconTile
+              x={604}
+              y={152}
+              icon={<AlertBellIcon size={42} color={COLORS.successGreen} />}
+              fill="rgba(255,255,255,0.94)"
+              progress={interpolate(sceneProgress, [0.48, 1], [0, 1], { extrapolateLeft: "clamp", extrapolateRight: "clamp" })}
+            />
+            <svg width="100%" height="100%" viewBox="0 0 960 640" style={{ position: "absolute", inset: 0 }}>
+              <line x1="198" y1="207" x2="260" y2="207" stroke="rgba(3,169,244,0.18)" strokeWidth="6" strokeLinecap="round" />
+              <line x1="370" y1="207" x2="432" y2="207" stroke="rgba(255,162,0,0.18)" strokeWidth="6" strokeLinecap="round" />
+              <line x1="542" y1="207" x2="604" y2="207" stroke="rgba(76,175,80,0.20)" strokeWidth="6" strokeLinecap="round" />
+            </svg>
+            <CaptionLine text="Build the rule you need." accent={COLORS.brandBlue} />
+          </>
+        ) : scene === 1 ? (
+          <>
+            <ZonePreview progress={sceneProgress} mode="breach" />
+            <PulseRing
+              x={730}
+              y={120}
+              size={84}
+              color="rgba(234,61,86,0.20)"
+              scale={interpolate(sceneProgress, [0.4, 1], [0.8, 1.25], { extrapolateLeft: "clamp", extrapolateRight: "clamp" })}
+              opacity={0.34}
+            />
+            <CaptionLine text="Watch the rule trigger itself." accent={COLORS.alertRed} />
+          </>
+        ) : (
+          <>
+            <ZonePreview progress={0.88} mode="alert" />
+            <IconTile
+              x={120}
+              y={164}
+              size={152}
+              icon={<AlertBellIcon size={56} color={COLORS.successGreen} />}
+              fill="rgba(255,255,255,0.96)"
+              progress={sceneProgress}
+            />
+            <PulseRing
+              x={154}
+              y={198}
+              size={84}
+              color="rgba(76,175,80,0.22)"
+              scale={interpolate(sceneProgress, [0, 1], [0.7, 1.28])}
+              opacity={0.36}
+            />
+            <PulseRing
+              x={154}
+              y={198}
+              size={84}
+              color="rgba(76,175,80,0.14)"
+              scale={interpolate(sceneProgress, [0, 1], [1, 1.56])}
+              opacity={0.26}
+            />
+            <CaptionLine text="Send alerts the moment it matters." accent={COLORS.successGreen} />
+          </>
         )}
-      </div>
+      </StageCard>
     </AbsoluteFill>
   );
 };

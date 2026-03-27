@@ -1,383 +1,179 @@
 import React from "react";
 import {
   AbsoluteFill,
-  useCurrentFrame,
-  useVideoConfig,
   interpolate,
   spring,
+  useCurrentFrame,
+  useVideoConfig,
 } from "remotion";
 import { COLORS, FONT } from "../theme";
-import { FacePortrait, CarRearView } from "./SvgIcons";
+import { CarRearView, FacePortrait, SearchIcon } from "./SvgIcons";
+import { CaptionLine, IconTile, PulseRing, StageCard, glassPanelStyle } from "./AppleSimpleMotion";
 
-// Animated scan line
-const ScanLine: React.FC<{
-  progress: number;
+const SCENE_FRAMES = 80;
+
+const ScanPanel: React.FC<{
+  left: number;
+  top: number;
+  width: number;
   height: number;
+  progress: number;
+  child: React.ReactNode;
   color: string;
-}> = ({ progress, height, color }) => (
+}> = ({ left, top, width, height, progress, child, color }) => (
   <div
     style={{
+      ...glassPanelStyle,
       position: "absolute",
-      left: 0,
-      right: 0,
-      top: interpolate(progress, [0, 1], [0, height]),
-      height: 2,
-      background: `linear-gradient(90deg, transparent 0%, ${color}40 20%, ${color} 50%, ${color}40 80%, transparent 100%)`,
-      boxShadow: `0 0 24px ${color}60, 0 0 4px ${color}`,
+      left,
+      top,
+      width,
+      height,
+      borderRadius: 28,
+      overflow: "hidden",
+      background: "linear-gradient(180deg, rgba(252,254,255,0.98) 0%, rgba(245,249,253,0.98) 100%)",
     }}
-  />
-);
-
-// Biometric scan grid overlay
-const BiometricGrid: React.FC<{
-  color: string;
-  opacity: number;
-}> = ({ color, opacity }) => (
-  <svg
-    style={{
-      position: "absolute",
-      top: 0,
-      left: 0,
-      width: "100%",
-      height: "100%",
-      opacity,
-    }}
-    viewBox="0 0 100 100"
-    preserveAspectRatio="none"
   >
-    {/* Horizontal lines */}
-    {[20, 40, 60, 80].map((y) => (
-      <line key={y} x1="0" y1={y} x2="100" y2={y} stroke={color} strokeWidth="0.3" opacity={0.3} />
-    ))}
-    {/* Vertical lines */}
-    {[20, 40, 60, 80].map((x) => (
-      <line key={x} x1={x} y1="0" x2={x} y2="100" stroke={color} strokeWidth="0.3" opacity={0.3} />
-    ))}
-  </svg>
+    <div style={{ position: "absolute", inset: 0, display: "flex", alignItems: "center", justifyContent: "center" }}>
+      {child}
+    </div>
+    <div
+      style={{
+        position: "absolute",
+        left: 18,
+        right: 18,
+        top: interpolate(progress, [0, 1], [24, height - 24]),
+        height: 2,
+        borderRadius: 999,
+        background: color,
+        opacity: 0.6,
+      }}
+    />
+  </div>
 );
 
 export const FacialRecLPR: React.FC = () => {
   const frame = useCurrentFrame();
-  const { fps, durationInFrames } = useVideoConfig();
-
-  // --- LEFT PANEL: Facial Recognition ---
-  const facePhase = frame % durationInFrames;
-  const faceScanProgress = interpolate(facePhase, [0, 90], [0, 1], {
-    extrapolateRight: "clamp",
-  });
-  const faceDetected = facePhase > 70;
-  const faceResultOpacity = interpolate(facePhase, [85, 110], [0, 1], {
-    extrapolateLeft: "clamp",
-    extrapolateRight: "clamp",
-  });
-
-  const faceBoxScale = spring({
-    frame: Math.max(0, facePhase - 70),
+  const { fps } = useVideoConfig();
+  const scene = frame < SCENE_FRAMES ? 0 : frame < SCENE_FRAMES * 2 ? 1 : 2;
+  const sceneProgress = spring({
+    frame: frame - scene * SCENE_FRAMES,
     fps,
-    config: { damping: 12, stiffness: 120 },
+    config: { damping: 18, stiffness: 110 },
   });
-
-  // --- RIGHT PANEL: License Plate Recognition ---
-  const lprPhase = (frame + 40) % durationInFrames;
-  const lprScanProgress = interpolate(lprPhase, [0, 100], [0, 1], {
-    extrapolateRight: "clamp",
-  });
-  const lprDetected = lprPhase > 80;
-  const lprResultOpacity = interpolate(lprPhase, [95, 120], [0, 1], {
-    extrapolateLeft: "clamp",
-    extrapolateRight: "clamp",
-  });
-
-  const panelStyle: React.CSSProperties = {
-    flex: 1,
-    position: "relative",
-    overflow: "hidden",
-    borderRadius: 14,
-    border: "1px solid rgba(255,255,255,0.08)",
-    background: "rgba(0,0,0,0.4)",
-  };
-
-  const panelLabelStyle: React.CSSProperties = {
-    position: "absolute",
-    top: 14,
-    left: 16,
-    fontSize: 11,
-    fontWeight: 700,
-    letterSpacing: 1.5,
-    textTransform: "uppercase" as const,
-    color: COLORS.textSecondary,
-    zIndex: 2,
-    display: "flex",
-    alignItems: "center",
-    gap: 8,
-  };
 
   return (
     <AbsoluteFill
       style={{
-        background: `linear-gradient(135deg, ${COLORS.darkBg} 0%, ${COLORS.darkNavy} 100%)`,
+        background:
+          "radial-gradient(circle at 12% 12%, rgba(3,169,244,0.08), transparent 22%), radial-gradient(circle at 86% 16%, rgba(255,162,0,0.07), transparent 18%), linear-gradient(180deg, #F7FBFF 0%, #FFFFFF 100%)",
         fontFamily: FONT,
-        padding: 24,
-        display: "flex",
-        gap: 20,
+        overflow: "hidden",
+        padding: 28,
       }}
     >
-      {/* LEFT: Facial Recognition */}
-      <div style={panelStyle}>
-        <div style={panelLabelStyle}>
-          <div
-            style={{
-              width: 6,
-              height: 6,
-              borderRadius: "50%",
-              background: faceDetected ? COLORS.successGreen : COLORS.brandBlue,
-              boxShadow: faceDetected ? `0 0 6px ${COLORS.successGreen}` : "none",
-            }}
-          />
-          Facial Recognition
-        </div>
-
-        {/* Biometric grid */}
-        <BiometricGrid color={COLORS.brandBlue} opacity={faceDetected ? 0.15 : 0.3} />
-
-        {/* Face SVG */}
-        <div
-          style={{
-            position: "absolute",
-            top: "50%",
-            left: "50%",
-            transform: "translate(-50%, -50%)",
-          }}
-        >
-          <FacePortrait width={130} />
-
-          {/* Detection box with corner markers */}
-          {faceDetected && (
+      <StageCard>
+        {scene === 0 ? (
+          <>
+            <ScanPanel
+              left={106}
+              top={86}
+              width={310}
+              height={276}
+              progress={sceneProgress}
+              color={COLORS.brandBlue}
+              child={<FacePortrait width={158} color="rgba(16,32,51,0.42)" />}
+            />
+            <IconTile
+              x={530}
+              y={138}
+              size={134}
+              icon={<SearchIcon size={42} color={COLORS.brandBlue} />}
+              fill="rgba(255,255,255,0.94)"
+              progress={interpolate(sceneProgress, [0.2, 1], [0, 1], {
+                extrapolateLeft: "clamp",
+                extrapolateRight: "clamp",
+              })}
+            />
+            <PulseRing
+              x={552}
+              y={160}
+              size={90}
+              color="rgba(3,169,244,0.18)"
+              scale={interpolate(sceneProgress, [0.22, 1], [0.8, 1.2], {
+                extrapolateLeft: "clamp",
+                extrapolateRight: "clamp",
+              })}
+              opacity={0.35}
+            />
+            <CaptionLine text="Match faces in seconds." accent={COLORS.brandBlue} />
+          </>
+        ) : scene === 1 ? (
+          <>
+            <ScanPanel
+              left={106}
+              top={86}
+              width={430}
+              height={276}
+              progress={sceneProgress}
+              color={COLORS.actionOrange}
+              child={<CarRearView width={250} plateText="ABC-1234" color="rgba(16,32,51,0.40)" />}
+            />
             <div
               style={{
                 position: "absolute",
-                top: -12,
-                left: -16,
-                width: 162,
-                height: 210,
-                transform: `scale(${faceBoxScale})`,
+                left: 232,
+                top: 244,
+                width: 178,
+                height: 48,
+                borderRadius: 16,
+                border: `2px solid ${COLORS.actionOrange}`,
+                boxShadow: `0 0 0 8px rgba(255,162,0,0.08)`,
               }}
-            >
-              {[
-                { top: 0, left: 0, borderTop: `3px solid ${COLORS.successGreen}`, borderLeft: `3px solid ${COLORS.successGreen}` },
-                { top: 0, right: 0, borderTop: `3px solid ${COLORS.successGreen}`, borderRight: `3px solid ${COLORS.successGreen}` },
-                { bottom: 0, left: 0, borderBottom: `3px solid ${COLORS.successGreen}`, borderLeft: `3px solid ${COLORS.successGreen}` },
-                { bottom: 0, right: 0, borderBottom: `3px solid ${COLORS.successGreen}`, borderRight: `3px solid ${COLORS.successGreen}` },
-              ].map((style, i) => (
-                <div
-                  key={i}
-                  style={{
-                    position: "absolute",
-                    width: 18,
-                    height: 18,
-                    ...style,
-                  }}
-                />
-              ))}
-              <div
-                style={{
-                  position: "absolute",
-                  inset: 0,
-                  border: `1px solid ${COLORS.successGreen}30`,
-                  borderRadius: 4,
-                }}
-              />
-            </div>
-          )}
-        </div>
-
-        {/* Scan line */}
-        {!faceDetected && (
-          <div style={{ position: "absolute", inset: 0 }}>
-            <ScanLine progress={faceScanProgress} height={520} color={COLORS.brandBlue} />
-          </div>
+            />
+            <CaptionLine text="Find license plates just as fast." accent={COLORS.actionOrange} />
+          </>
+        ) : (
+          <>
+            <IconTile
+              x={122}
+              y={158}
+              size={138}
+              icon={<FacePortrait width={76} color="rgba(16,32,51,0.36)" />}
+              fill="rgba(255,255,255,0.94)"
+              progress={sceneProgress}
+            />
+            <IconTile
+              x={352}
+              y={158}
+              size={138}
+              icon={<SearchIcon size={44} color={COLORS.successGreen} />}
+              fill="rgba(255,255,255,0.94)"
+              progress={interpolate(sceneProgress, [0.16, 1], [0, 1], {
+                extrapolateLeft: "clamp",
+                extrapolateRight: "clamp",
+              })}
+            />
+            <IconTile
+              x={582}
+              y={158}
+              size={138}
+              icon={<CarRearView width={96} plateText="" color="rgba(16,32,51,0.38)" />}
+              fill="rgba(255,255,255,0.94)"
+              progress={interpolate(sceneProgress, [0.3, 1], [0, 1], {
+                extrapolateLeft: "clamp",
+                extrapolateRight: "clamp",
+              })}
+            />
+            <svg width="100%" height="100%" viewBox="0 0 960 640" style={{ position: "absolute", inset: 0 }}>
+              <line x1="260" y1="227" x2="352" y2="227" stroke="rgba(3,169,244,0.18)" strokeWidth="6" strokeLinecap="round" />
+              <line x1="490" y1="227" x2="582" y2="227" stroke="rgba(76,175,80,0.20)" strokeWidth="6" strokeLinecap="round" />
+              <circle cx={interpolate(sceneProgress, [0, 0.5], [260, 490], { extrapolateLeft: "clamp", extrapolateRight: "clamp" })} cy="227" r="10" fill={COLORS.successGreen} />
+            </svg>
+            <CaptionLine text="Search one timeline for both." accent={COLORS.successGreen} />
+          </>
         )}
-
-        {/* Recognition Result */}
-        <div
-          style={{
-            position: "absolute",
-            bottom: 20,
-            left: 16,
-            right: 16,
-            background: "rgba(0,0,0,0.65)",
-            borderRadius: 12,
-            padding: "14px 18px",
-            opacity: faceResultOpacity,
-            border: `1px solid ${COLORS.successGreen}35`,
-            backdropFilter: "blur(10px)",
-          }}
-        >
-          <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
-            <div
-              style={{
-                width: 10,
-                height: 10,
-                borderRadius: "50%",
-                background: COLORS.successGreen,
-                boxShadow: `0 0 10px ${COLORS.successGreen}80`,
-              }}
-            />
-            <div style={{ flex: 1 }}>
-              <div
-                style={{
-                  fontSize: 10,
-                  color: COLORS.successGreen,
-                  fontWeight: 700,
-                  textTransform: "uppercase",
-                  letterSpacing: 1.5,
-                }}
-              >
-                Match Found
-              </div>
-              <div
-                style={{
-                  fontSize: 15,
-                  color: COLORS.white,
-                  fontWeight: 700,
-                  marginTop: 3,
-                }}
-              >
-                John D. — Employee
-              </div>
-            </div>
-            <div
-              style={{
-                fontSize: 24,
-                fontWeight: 800,
-                color: COLORS.successGreen,
-              }}
-            >
-              97%
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* RIGHT: License Plate Recognition */}
-      <div style={panelStyle}>
-        <div style={panelLabelStyle}>
-          <div
-            style={{
-              width: 6,
-              height: 6,
-              borderRadius: "50%",
-              background: lprDetected ? COLORS.brandBlue : COLORS.actionOrange,
-              boxShadow: lprDetected ? `0 0 6px ${COLORS.brandBlue}` : "none",
-            }}
-          />
-          License Plate Recognition
-        </div>
-
-        {/* Biometric grid */}
-        <BiometricGrid color={COLORS.actionOrange} opacity={lprDetected ? 0.1 : 0.25} />
-
-        {/* Car rear SVG */}
-        <div
-          style={{
-            position: "absolute",
-            top: "42%",
-            left: "50%",
-            transform: "translate(-50%, -50%)",
-          }}
-        >
-          <CarRearView width={240} plateText="ABC-1234" />
-
-          {/* Detection box around plate */}
-          {lprDetected && (
-            <div
-              style={{
-                position: "absolute",
-                bottom: 22,
-                left: "50%",
-                transform: "translateX(-50%)",
-                width: 118,
-                height: 42,
-                border: `2px solid ${COLORS.brandBlue}`,
-                borderRadius: 4,
-                boxShadow: `0 0 16px ${COLORS.brandBlue}40, inset 0 0 8px ${COLORS.brandBlue}15`,
-              }}
-            />
-          )}
-        </div>
-
-        {/* Scan line */}
-        {!lprDetected && (
-          <div style={{ position: "absolute", inset: 0 }}>
-            <ScanLine progress={lprScanProgress} height={520} color={COLORS.actionOrange} />
-          </div>
-        )}
-
-        {/* LPR Result */}
-        <div
-          style={{
-            position: "absolute",
-            bottom: 20,
-            left: 16,
-            right: 16,
-            background: "rgba(0,0,0,0.65)",
-            borderRadius: 12,
-            padding: "14px 18px",
-            opacity: lprResultOpacity,
-            border: `1px solid ${COLORS.brandBlue}35`,
-            backdropFilter: "blur(10px)",
-          }}
-        >
-          <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
-            <div
-              style={{
-                width: 10,
-                height: 10,
-                borderRadius: "50%",
-                background: COLORS.brandBlue,
-                boxShadow: `0 0 10px ${COLORS.brandBlue}80`,
-              }}
-            />
-            <div style={{ flex: 1 }}>
-              <div
-                style={{
-                  fontSize: 10,
-                  color: COLORS.brandBlue,
-                  fontWeight: 700,
-                  textTransform: "uppercase",
-                  letterSpacing: 1.5,
-                }}
-              >
-                Plate Recognized
-              </div>
-              <div
-                style={{
-                  fontSize: 16,
-                  color: COLORS.white,
-                  fontWeight: 700,
-                  fontFamily: "monospace",
-                  marginTop: 3,
-                  letterSpacing: 3,
-                }}
-              >
-                ABC-1234
-              </div>
-            </div>
-            <div
-              style={{
-                fontSize: 11,
-                color: COLORS.textSecondary,
-                background: "rgba(255,255,255,0.08)",
-                padding: "4px 10px",
-                borderRadius: 6,
-                fontWeight: 600,
-              }}
-            >
-              Registered • VIP
-            </div>
-          </div>
-        </div>
-      </div>
+      </StageCard>
     </AbsoluteFill>
   );
 };

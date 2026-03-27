@@ -1,386 +1,239 @@
 import React from "react";
 import {
   AbsoluteFill,
+  interpolate,
+  spring,
   useCurrentFrame,
   useVideoConfig,
-  interpolate,
 } from "remotion";
 import { COLORS, FONT } from "../theme";
-import { PersonSilhouette, VehicleSide } from "./SvgIcons";
+import { CameraIcon, CloudIcon, PersonSilhouette, VehicleSide } from "./SvgIcons";
+import { CaptionLine, IconTile, PulseRing, StageCard, fadeUp, glassPanelStyle } from "./AppleSimpleMotion";
 
-// Bounding box component for detected objects
-const DetectionBox: React.FC<{
-  x: number;
-  y: number;
-  w: number;
-  h: number;
-  label: string;
-  confidence: number;
-  color: string;
-  opacity: number;
-}> = ({ x, y, w, h, label, confidence, color, opacity }) => (
-  <div
-    style={{
-      position: "absolute",
-      left: x,
-      top: y,
-      width: w,
-      height: h,
-      opacity,
-    }}
-  >
-    {/* Corner brackets */}
-    {[
-      { top: 0, left: 0, borderTop: `2px solid ${color}`, borderLeft: `2px solid ${color}` },
-      { top: 0, right: 0, borderTop: `2px solid ${color}`, borderRight: `2px solid ${color}` },
-      { bottom: 0, left: 0, borderBottom: `2px solid ${color}`, borderLeft: `2px solid ${color}` },
-      { bottom: 0, right: 0, borderBottom: `2px solid ${color}`, borderRight: `2px solid ${color}` },
-    ].map((style, i) => (
-      <div
-        key={i}
-        style={{
-          position: "absolute",
-          width: 12,
-          height: 12,
-          ...style,
-        }}
-      />
-    ))}
-    {/* Thin border */}
+const SCENE_FRAMES = 80;
+
+const DetectionFrame: React.FC<{
+  personProgress: number;
+  vehicleProgress: number;
+  active: boolean;
+}> = ({ personProgress, vehicleProgress, active }) => {
+  const personX = interpolate(personProgress, [0, 1], [128, 220]);
+  const carX = interpolate(vehicleProgress, [0, 1], [520, 406]);
+
+  return (
     <div
       style={{
+        ...glassPanelStyle,
         position: "absolute",
-        inset: 0,
-        border: `1px solid ${color}40`,
-        borderRadius: 2,
-      }}
-    />
-    {/* Label tag */}
-    <div
-      style={{
-        position: "absolute",
-        top: -24,
-        left: -1,
-        background: color,
-        color: "#fff",
-        fontSize: 11,
-        fontFamily: FONT,
-        fontWeight: 600,
-        padding: "3px 10px",
-        borderRadius: "4px 4px 4px 0",
-        whiteSpace: "nowrap",
-        boxShadow: `0 2px 8px ${color}40`,
+        left: 58,
+        top: 72,
+        width: 560,
+        height: 300,
+        borderRadius: 30,
+        overflow: "hidden",
+        background:
+          "linear-gradient(180deg, rgba(238,246,251,0.98) 0%, rgba(250,252,255,0.98) 100%)",
       }}
     >
-      {label} {Math.round(confidence * 100)}%
-    </div>
-  </div>
-);
+      {[...Array(5)].map((_, i) => (
+        <div
+          key={i}
+          style={{
+            position: "absolute",
+            left: 0,
+            right: 0,
+            top: 50 + i * 38,
+            height: 1,
+            background: "rgba(16,32,51,0.04)",
+          }}
+        />
+      ))}
 
-// Tripwire line
-const TripwireLine: React.FC<{ y: number; crossed: boolean; frame: number }> = ({
-  y,
-  crossed,
-  frame,
-}) => {
-  const glow = interpolate(Math.sin(frame * 0.15), [-1, 1], [0.5, 1]);
-  return (
-    <>
       <div
         style={{
           position: "absolute",
           left: 60,
-          right: 60,
-          top: y,
+          bottom: 46,
+          width: 440,
           height: 2,
-          background: crossed ? COLORS.alertRed : COLORS.actionOrange,
-          opacity: glow * 0.8,
-          boxShadow: crossed
-            ? `0 0 16px ${COLORS.alertRed}80`
-            : `0 0 10px ${COLORS.actionOrange}60`,
+          background: "rgba(16,32,51,0.08)",
         }}
       />
-      {/* Dashed guide lines */}
+
       <div
         style={{
           position: "absolute",
-          left: 60,
-          right: 60,
-          top: y - 1,
-          height: 0,
-          borderTop: `1px dashed ${crossed ? COLORS.alertRed : COLORS.actionOrange}30`,
-        }}
-      />
-      <div
-        style={{
-          position: "absolute",
-          left: 62,
-          top: y - 22,
-          fontSize: 10,
-          fontFamily: FONT,
-          fontWeight: 700,
-          color: COLORS.actionOrange,
-          textTransform: "uppercase",
-          letterSpacing: 1.5,
-          display: "flex",
-          alignItems: "center",
-          gap: 6,
+          left: personX,
+          top: 138,
+          transform: "translate(-50%, -50%)",
         }}
       >
-        <span style={{ fontSize: 8 }}>▼</span> Tripwire Zone
+        <PersonSilhouette width={38} color="rgba(16,32,51,0.58)" legAngle={Math.sin(personProgress * 10) * 10} />
+        {active && (
+          <div
+            style={{
+              position: "absolute",
+              left: -10,
+              top: -8,
+              width: 58,
+              height: 96,
+              borderRadius: 14,
+              border: `2px solid ${COLORS.successGreen}`,
+              boxShadow: `0 0 0 8px rgba(76,175,80,0.08)`,
+            }}
+          />
+        )}
       </div>
-    </>
+
+      <div
+        style={{
+          position: "absolute",
+          left: carX,
+          top: 204,
+          transform: "translate(-50%, -50%)",
+        }}
+      >
+        <VehicleSide width={150} color="rgba(16,32,51,0.44)" wheelRotation={vehicleProgress * 180} />
+        {active && (
+          <div
+            style={{
+              position: "absolute",
+              left: 10,
+              top: 4,
+              width: 126,
+              height: 54,
+              borderRadius: 16,
+              border: `2px solid ${COLORS.brandBlue}`,
+              boxShadow: `0 0 0 8px rgba(3,169,244,0.08)`,
+            }}
+          />
+        )}
+      </div>
+    </div>
   );
 };
 
 export const EdgeAIDetection: React.FC = () => {
   const frame = useCurrentFrame();
-  const { durationInFrames } = useVideoConfig();
+  const { fps } = useVideoConfig();
+  const scene = frame < SCENE_FRAMES ? 0 : frame < SCENE_FRAMES * 2 ? 1 : 2;
+  const sceneProgress = spring({
+    frame: frame - scene * SCENE_FRAMES,
+    fps,
+    config: { damping: 18, stiffness: 110 },
+  });
 
-  // Person walking across (left to right)
-  const personProgress = interpolate(
-    frame % durationInFrames,
-    [0, durationInFrames],
-    [0, 1]
-  );
-  const personX = interpolate(personProgress, [0, 1], [-40, 920]);
-  const personY = 260;
-  const personCrossedTripwire = personY + 88 > 340;
-  const legAngle = Math.sin(frame * 0.35) * 18;
-
-  // Vehicle driving (right to left, delayed)
-  const vehicleDelay = 60;
-  const vehicleFrame = Math.max(0, (frame % durationInFrames) - vehicleDelay);
-  const vehicleProgress = interpolate(
-    vehicleFrame,
-    [0, durationInFrames - vehicleDelay],
-    [0, 1],
-    { extrapolateRight: "clamp" }
-  );
-  const vehicleX = interpolate(vehicleProgress, [0, 1], [980, -140]);
-  const vehicleY = 370;
-  const wheelRotation = frame * 8;
-
-  // Detection box tracking
-  const personDetected = personProgress > 0.08 && personProgress < 0.92;
-  const vehicleDetected = vehicleProgress > 0.05 && vehicleProgress < 0.9;
-
-  // Counter animation
-  const crossCount = Math.floor(
-    interpolate(frame, [0, durationInFrames], [8, 15], {
-      extrapolateRight: "clamp",
-    })
-  );
-
-  // HUD flicker
-  const hudOpacity = interpolate(Math.sin(frame * 0.3), [-1, 1], [0.75, 1]);
+  const personProgress = interpolate(sceneProgress, [0, 1], [0, 1], {
+    extrapolateLeft: "clamp",
+    extrapolateRight: "clamp",
+  });
+  const vehicleProgress = interpolate(sceneProgress, [0.12, 1], [0, 1], {
+    extrapolateLeft: "clamp",
+    extrapolateRight: "clamp",
+  });
 
   return (
     <AbsoluteFill
       style={{
-        background: `linear-gradient(135deg, ${COLORS.darkBg} 0%, ${COLORS.darkNavy} 100%)`,
+        background:
+          "radial-gradient(circle at 10% 10%, rgba(3,169,244,0.08), transparent 22%), radial-gradient(circle at 86% 12%, rgba(255,162,0,0.06), transparent 18%), linear-gradient(180deg, #F7FBFF 0%, #FFFFFF 100%)",
         fontFamily: FONT,
         overflow: "hidden",
+        padding: 28,
       }}
     >
-      {/* Surveillance grid lines */}
-      {[...Array(8)].map((_, i) => (
-        <div
-          key={`h${i}`}
-          style={{
-            position: "absolute",
-            left: 0,
-            right: 0,
-            top: i * 80,
-            height: 1,
-            background: "rgba(255,255,255,0.03)",
-          }}
-        />
-      ))}
-      {[...Array(12)].map((_, i) => (
-        <div
-          key={`v${i}`}
-          style={{
-            position: "absolute",
-            top: 0,
-            bottom: 0,
-            left: i * 80,
-            width: 1,
-            background: "rgba(255,255,255,0.03)",
-          }}
-        />
-      ))}
-
-      {/* Tripwire */}
-      <TripwireLine y={340} crossed={personCrossedTripwire} frame={frame} />
-
-      {/* Person (SVG) */}
-      <div style={{ position: "absolute", left: personX, top: personY }}>
-        <PersonSilhouette width={40} legAngle={legAngle} />
-      </div>
-      {personDetected && (
-        <DetectionBox
-          x={personX - 6}
-          y={personY - 10}
-          w={52}
-          h={100}
-          label="Person"
-          confidence={0.94}
-          color={COLORS.successGreen}
-          opacity={1}
-        />
-      )}
-
-      {/* Vehicle (SVG) */}
-      {vehicleProgress > 0 && (
-        <div
-          style={{
-            position: "absolute",
-            left: vehicleX,
-            top: vehicleY,
-            transform: "scaleX(-1)", // flip for driving right-to-left
-          }}
-        >
-          <VehicleSide width={120} wheelRotation={wheelRotation} />
-        </div>
-      )}
-      {vehicleDetected && (
-        <DetectionBox
-          x={vehicleX - 4}
-          y={vehicleY - 6}
-          w={128}
-          h={68}
-          label="Vehicle"
-          confidence={0.89}
-          color={COLORS.brandBlue}
-          opacity={1}
-        />
-      )}
-
-      {/* HUD Overlay - Top */}
-      <div
-        style={{
-          position: "absolute",
-          top: 16,
-          left: 20,
-          right: 20,
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "center",
-          opacity: hudOpacity,
-        }}
-      >
-        <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-          <div
-            style={{
-              width: 8,
-              height: 8,
-              borderRadius: "50%",
-              background: COLORS.alertRed,
-              boxShadow: `0 0 6px ${COLORS.alertRed}`,
-              opacity: Math.sin(frame * 0.4) > 0 ? 1 : 0.3,
-            }}
+      <StageCard>
+        {scene < 2 ? (
+          <DetectionFrame
+            personProgress={personProgress}
+            vehicleProgress={vehicleProgress}
+            active={scene === 1}
           />
-          <span
-            style={{
-              color: COLORS.white,
-              fontSize: 13,
-              fontWeight: 600,
-              letterSpacing: 1,
-            }}
-          >
-            CAM-01 | LIVE
-          </span>
-        </div>
-        <span
-          style={{
-            color: COLORS.textSecondary,
-            fontSize: 12,
-            fontFamily: "monospace",
-          }}
-        >
-          2592 × 1944 | 30fps
-        </span>
-      </div>
+        ) : null}
 
-      {/* HUD Overlay - Bottom Stats */}
-      <div
-        style={{
-          position: "absolute",
-          bottom: 16,
-          left: 20,
-          right: 20,
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "flex-end",
-        }}
-      >
-        {/* Counter */}
-        <div
-          style={{
-            background: "rgba(0,0,0,0.6)",
-            borderRadius: 10,
-            padding: "10px 18px",
-            backdropFilter: "blur(8px)",
-            border: "1px solid rgba(255,255,255,0.08)",
-          }}
-        >
-          <div
-            style={{
-              fontSize: 10,
-              color: COLORS.textMuted,
-              textTransform: "uppercase",
-              letterSpacing: 1.5,
-              marginBottom: 4,
-            }}
-          >
-            Tripwire Count
-          </div>
-          <div
-            style={{
-              fontSize: 28,
-              fontWeight: 700,
-              color: COLORS.actionOrange,
-            }}
-          >
-            {crossCount}
-          </div>
-        </div>
-
-        {/* Detection stats */}
-        <div style={{ display: "flex", gap: 12 }}>
-          {[
-            { label: "Persons", value: personDetected ? "1" : "0", color: COLORS.successGreen },
-            { label: "Vehicles", value: vehicleDetected ? "1" : "0", color: COLORS.brandBlue },
-          ].map(({ label, value, color }) => (
-            <div
-              key={label}
-              style={{
-                background: "rgba(0,0,0,0.6)",
-                borderRadius: 10,
-                padding: "8px 16px",
-                backdropFilter: "blur(8px)",
-                border: `1px solid ${value !== "0" ? color + "30" : "rgba(255,255,255,0.08)"}`,
-                textAlign: "center",
-              }}
-            >
-              <div
-                style={{
-                  fontSize: 9,
-                  color: COLORS.textMuted,
-                  textTransform: "uppercase",
-                  letterSpacing: 1,
-                }}
-              >
-                {label}
-              </div>
-              <div style={{ fontSize: 20, fontWeight: 700, color }}>
-                {value}
-              </div>
-            </div>
-          ))}
-        </div>
-      </div>
+        {scene === 0 ? (
+          <>
+            <IconTile
+              x={690}
+              y={116}
+              icon={<CameraIcon size={42} color={COLORS.brandBlue} />}
+              fill="rgba(255,255,255,0.92)"
+              progress={sceneProgress}
+            />
+            <IconTile
+              x={690}
+              y={246}
+              icon={<div style={{ display: "flex", gap: 10, alignItems: "center" }}><PersonSilhouette width={22} color={COLORS.successGreen} /><VehicleSide width={60} color={COLORS.brandBlue} /></div>}
+              fill="rgba(255,255,255,0.92)"
+              progress={interpolate(sceneProgress, [0.18, 1], [0, 1], {
+                extrapolateLeft: "clamp",
+                extrapolateRight: "clamp",
+              })}
+            />
+            <CaptionLine text="See people and vehicles instantly." accent={COLORS.brandBlue} />
+          </>
+        ) : scene === 1 ? (
+          <>
+            <PulseRing
+              x={204}
+              y={124}
+              size={70}
+              color="rgba(76,175,80,0.24)"
+              scale={interpolate(sceneProgress, [0, 1], [0.7, 1.25])}
+              opacity={0.35}
+            />
+            <PulseRing
+              x={418}
+              y={178}
+              size={150}
+              color="rgba(3,169,244,0.18)"
+              scale={interpolate(sceneProgress, [0, 1], [0.8, 1.08])}
+              opacity={0.28}
+            />
+            <CaptionLine text="Track activity where it happens." accent={COLORS.successGreen} />
+          </>
+        ) : (
+          <>
+            <IconTile
+              x={112}
+              y={162}
+              size={124}
+              icon={<CameraIcon size={48} color={COLORS.brandBlue} />}
+              fill="rgba(255,255,255,0.94)"
+              progress={sceneProgress}
+            />
+            <IconTile
+              x={360}
+              y={162}
+              size={124}
+              icon={<div style={{ width: 44, height: 44, borderRadius: 16, background: "rgba(76,175,80,0.14)", display: "flex", alignItems: "center", justifyContent: "center", color: COLORS.successGreen, fontSize: 20, fontWeight: 800 }}>AI</div>}
+              fill="rgba(255,255,255,0.94)"
+              progress={interpolate(sceneProgress, [0.14, 1], [0, 1], {
+                extrapolateLeft: "clamp",
+                extrapolateRight: "clamp",
+              })}
+            />
+            <IconTile
+              x={610}
+              y={162}
+              size={124}
+              icon={<CloudIcon size={48} color={COLORS.actionOrange} />}
+              fill="rgba(255,255,255,0.94)"
+              progress={interpolate(sceneProgress, [0.28, 1], [0, 1], {
+                extrapolateLeft: "clamp",
+                extrapolateRight: "clamp",
+              })}
+            />
+            <svg width="100%" height="100%" viewBox="0 0 960 640" style={{ position: "absolute", inset: 0 }}>
+              <line x1="236" y1="224" x2="360" y2="224" stroke="rgba(3,169,244,0.22)" strokeWidth="6" strokeLinecap="round" />
+              <line x1="484" y1="224" x2="610" y2="224" stroke="rgba(255,162,0,0.18)" strokeWidth="6" strokeLinecap="round" />
+              <circle cx={interpolate(sceneProgress, [0, 0.45], [236, 484], { extrapolateLeft: "clamp", extrapolateRight: "clamp" })} cy="224" r="10" fill={COLORS.brandBlue} />
+              <circle cx={interpolate(sceneProgress, [0.45, 1], [484, 610], { extrapolateLeft: "clamp", extrapolateRight: "clamp" })} cy="224" r="10" fill={COLORS.actionOrange} />
+            </svg>
+            <CaptionLine text="Process events right at the edge." accent={COLORS.actionOrange} />
+          </>
+        )}
+      </StageCard>
     </AbsoluteFill>
   );
 };
